@@ -1,6 +1,1517 @@
 /* =========================================================
    URDU VOICE STUDIO AI
-   STUDIO DASHBOARD STYLES
+   COMPLETE MAIN STYLESHEET
+   Front Page + Studio Dashboard
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT VARIABLES
+   ========================================================= */
+
+:root {
+    --ink: #101827;
+    --ink-soft: #172238;
+
+    --mist: #eef4f5;
+    --white: #ffffff;
+
+    --teal: #19b6a5;
+    --teal-light: #6fe1d5;
+
+    --indigo: #5967e8;
+    --indigo-light: #8791f2;
+
+    --coral: #f47b68;
+    --coral-light: #ffad9e;
+
+    --champagne: #f5d98b;
+    --champagne-light: #ffe9aa;
+
+    --text-dark: #162033;
+    --text-soft: #697386;
+
+    --border-light: rgba(255, 255, 255, 0.28);
+
+    --shadow:
+        0 30px 80px rgba(5, 15, 30, 0.28);
+
+    --radius-large: 30px;
+    --radius-medium: 18px;
+    --radius-small: 12px;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        "Noto Nastaliq Urdu",
+        "Noto Naskh Arabic",
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    background: var(--ink);
+    color: var(--text-dark);
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+
+/* =========================================================
+   FRONT PAGE
+   ========================================================= */
+
+.page {
+    position: relative;
+
+    min-height: 100vh;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    padding: 40px 20px;
+
+    background:
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(25, 182, 165, 0.28),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 88% 15%,
+            rgba(89, 103, 232, 0.30),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 82% 86%,
+            rgba(244, 123, 104, 0.24),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 18% 88%,
+            rgba(245, 217, 139, 0.18),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #0d1524 0%,
+            #121c30 48%,
+            #0e1728 100%
+        );
+
+    transition:
+        background 0.7s ease;
+}
+
+
+/* =========================================================
+   FRONT PAGE FLOATING LIGHTS
+   ========================================================= */
+
+.light {
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    filter: blur(80px);
+
+    opacity: 0.22;
+
+    pointer-events: none;
+
+    transition:
+        transform 1.2s ease,
+        opacity 0.8s ease;
+}
+
+.light.one {
+    top: -180px;
+    left: -130px;
+
+    background: var(--teal);
+}
+
+.light.two {
+    top: -160px;
+    right: -130px;
+
+    background: var(--indigo);
+}
+
+.light.three {
+    bottom: -190px;
+    right: 12%;
+
+    background: var(--coral);
+}
+
+.light.four {
+    bottom: -180px;
+    left: 8%;
+
+    background: var(--champagne);
+}
+
+
+/* =========================================================
+   FRONT PAGE LIGHT HOVER
+   ========================================================= */
+
+.page:hover .light.one {
+    transform:
+        translate(35px, 25px)
+        scale(1.08);
+
+    opacity: 0.27;
+}
+
+.page:hover .light.two {
+    transform:
+        translate(-30px, 20px)
+        scale(1.06);
+
+    opacity: 0.26;
+}
+
+.page:hover .light.three {
+    transform:
+        translate(-20px, -25px)
+        scale(1.08);
+
+    opacity: 0.26;
+}
+
+.page:hover .light.four {
+    transform:
+        translate(25px, -20px)
+        scale(1.08);
+
+    opacity: 0.22;
+}
+
+
+/* =========================================================
+   MAIN AUTH CARD
+   ========================================================= */
+
+.auth-card {
+    position: relative;
+    z-index: 5;
+
+    width: min(1120px, 100%);
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--border-light);
+
+    border-radius:
+        var(--radius-large);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.13),
+            rgba(255, 255, 255, 0.055)
+        );
+
+    backdrop-filter:
+        blur(24px);
+
+    -webkit-backdrop-filter:
+        blur(24px);
+
+    box-shadow:
+        var(--shadow);
+
+    transition:
+        transform 0.5s ease,
+        box-shadow 0.5s ease;
+}
+
+.auth-card:hover {
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 38px 100px rgba(5, 15, 30, 0.34),
+        0 0 70px rgba(25, 182, 165, 0.07);
+}
+
+
+/* =========================================================
+   BRAND SIDE
+   ========================================================= */
+
+.brand-side {
+    position: relative;
+
+    min-height: 620px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 65px;
+
+    color: var(--white);
+
+    background:
+        radial-gradient(
+            circle at 25% 25%,
+            rgba(25, 182, 165, 0.25),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 80% 75%,
+            rgba(244, 123, 104, 0.18),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(25, 182, 165, 0.12),
+            rgba(89, 103, 232, 0.12),
+            rgba(244, 123, 104, 0.08)
+        );
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   BRAND DECORATIVE LIGHT
+   ========================================================= */
+
+.brand-side::before {
+    content: "";
+
+    position: absolute;
+
+    width: 280px;
+    height: 280px;
+
+    top: -130px;
+    right: -100px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(245, 217, 139, 0.30),
+            transparent 68%
+        );
+
+    filter: blur(15px);
+
+    transition:
+        transform 0.9s ease;
+}
+
+.brand-side:hover::before {
+    transform:
+        translate(-35px, 35px)
+        scale(1.15);
+}
+
+
+/* =========================================================
+   LOGO WRAPPER
+   ========================================================= */
+
+.logo-wrap {
+    position: relative;
+    z-index: 3;
+
+    width: 150px;
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 30px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
+
+    border-radius: 28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(25, 182, 165, 0.16),
+            rgba(89, 103, 232, 0.14),
+            rgba(244, 123, 104, 0.12)
+        );
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    transition:
+        transform 0.45s ease,
+        box-shadow 0.45s ease,
+        border-color 0.45s ease;
+}
+
+
+/* =========================================================
+   LOGO IMAGE
+   ========================================================= */
+
+.brand-logo {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    max-width: 125px;
+    max-height: 125px;
+
+    object-fit: contain;
+
+    border-radius: 20px;
+
+    filter:
+        drop-shadow(
+            0 10px 18px
+            rgba(0, 0, 0, 0.18)
+        );
+
+    transition:
+        transform 0.45s ease,
+        filter 0.45s ease;
+}
+
+
+/* =========================================================
+   LOGO HOVER
+   ========================================================= */
+
+.logo-wrap:hover {
+    transform:
+        translateY(-6px)
+        rotate(-1.5deg)
+        scale(1.02);
+
+    border-color:
+        rgba(255, 255, 255, 0.34);
+
+    box-shadow:
+        0 25px 55px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(25, 182, 165, 0.16),
+        0 0 70px rgba(89, 103, 232, 0.08);
+}
+
+.logo-wrap:hover .brand-logo {
+    transform:
+        scale(1.04);
+
+    filter:
+        drop-shadow(
+            0 13px 24px
+            rgba(0, 0, 0, 0.22)
+        );
+}
+
+
+/* =========================================================
+   BRAND CONTENT
+   ========================================================= */
+
+.brand-content {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   SMALL BRAND NAME
+   ========================================================= */
+
+.brand-small {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color:
+        rgba(255, 255, 255, 0.68);
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   BRAND HEADING
+   ========================================================= */
+
+.brand-side h1 {
+    position: relative;
+    z-index: 2;
+
+    margin-bottom: 18px;
+
+    font-family:
+        "Noto Nastaliq Urdu",
+        "Noto Naskh Arabic",
+        serif;
+
+    font-size:
+        clamp(38px, 5vw, 58px);
+
+    line-height: 1.35;
+
+    font-weight: 700;
+
+    background:
+        linear-gradient(
+            100deg,
+            #ffffff 5%,
+            #d7fffa 35%,
+            #f5d98b 70%,
+            #ffffff 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    transition:
+        transform 0.4s ease;
+}
+
+.brand-side:hover h1 {
+    transform:
+        translateX(-4px);
+}
+
+
+/* =========================================================
+   BRAND DESCRIPTION
+   ========================================================= */
+
+.brand-text p {
+    position: relative;
+    z-index: 2;
+
+    max-width: 440px;
+
+    margin-bottom: 32px;
+
+    color:
+        rgba(255, 255, 255, 0.82);
+
+    font-size: 19px;
+
+    line-height: 2;
+
+    transition:
+        color 0.4s ease;
+}
+
+.brand-side:hover .brand-text p {
+    color:
+        rgba(255, 255, 255, 0.95);
+}
+
+
+/* =========================================================
+   BRAND FEATURES
+   ========================================================= */
+
+.brand-features {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 13px;
+
+    margin-top: 6px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    color:
+        rgba(255, 255, 255, 0.78);
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.feature:hover {
+    color:
+        #ffffff;
+
+    transform:
+        translateX(-4px);
+}
+
+.feature-dot {
+    flex: 0 0 auto;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--teal),
+            var(--champagne)
+        );
+
+    box-shadow:
+        0 0 14px
+        rgba(25, 182, 165, 0.45);
+}
+
+
+/* =========================================================
+   FORM SIDE
+   ========================================================= */
+
+.form-side {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 48px 60px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.97),
+            rgba(238, 244, 245, 0.93)
+        );
+}
+
+
+/* =========================================================
+   FORM CONTAINER
+   ========================================================= */
+
+.form-container {
+    width: 100%;
+    max-width: 440px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   LANGUAGE STEP
+   ========================================================= */
+
+.language-step {
+    position: relative;
+
+    width: 100%;
+
+    margin-bottom: 30px;
+
+    padding: 20px 20px 19px;
+
+    border:
+        1px solid
+        rgba(25, 182, 165, 0.18);
+
+    border-radius:
+        var(--radius-medium);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(25, 182, 165, 0.10),
+            rgba(89, 103, 232, 0.075),
+            rgba(244, 123, 104, 0.055),
+            rgba(245, 217, 139, 0.09)
+        );
+
+    box-shadow:
+        0 12px 30px
+        rgba(16, 24, 39, 0.07),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.80);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.language-step::before {
+    content: "";
+
+    position: absolute;
+
+    top: -55px;
+    right: -45px;
+
+    width: 140px;
+    height: 140px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(89, 103, 232, 0.16),
+            transparent 68%
+        );
+
+    pointer-events: none;
+}
+
+.language-step::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: -65px;
+    left: -45px;
+
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(244, 123, 104, 0.12),
+            transparent 70%
+        );
+
+    pointer-events: none;
+}
+
+.language-step:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(25, 182, 165, 0.32);
+
+    box-shadow:
+        0 17px 38px
+        rgba(16, 24, 39, 0.10),
+        0 0 30px
+        rgba(25, 182, 165, 0.07);
+}
+
+
+/* =========================================================
+   LANGUAGE STEP HEADING
+   ========================================================= */
+
+.language-step-heading {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 16px;
+}
+
+.step-number {
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--teal),
+            var(--indigo),
+            var(--coral)
+        );
+
+    color:
+        #ffffff;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 20px
+        rgba(89, 103, 232, 0.20),
+        0 0 18px
+        rgba(25, 182, 165, 0.12);
+}
+
+.language-step-text {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+}
+
+.language-step-text strong {
+    color:
+        var(--text-dark);
+
+    font-size: 18px;
+
+    line-height: 1.8;
+
+    font-weight: 800;
+}
+
+.language-step-text small {
+    color:
+        var(--text-soft);
+
+    font-family:
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   LANGUAGE SELECTOR
+   ========================================================= */
+
+.language-selector {
+    position: relative;
+    z-index: 3;
+
+    width: 100%;
+}
+
+.language-select {
+    width: 100%;
+    height: 54px;
+
+    padding:
+        0 17px;
+
+    border:
+        1px solid
+        rgba(25, 182, 165, 0.22);
+
+    border-radius:
+        var(--radius-small);
+
+    outline: none;
+
+    appearance: auto;
+
+    background:
+        linear-gradient(
+            100deg,
+            rgba(255, 255, 255, 0.95),
+            rgba(244, 248, 249, 0.94)
+        );
+
+    color:
+        var(--text-dark);
+
+    font-family:
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 7px 18px
+        rgba(16, 24, 39, 0.06);
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease,
+        background 0.3s ease;
+}
+
+.language-select:hover {
+    border-color:
+        rgba(25, 182, 165, 0.48);
+
+    background:
+        #ffffff;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 10px 24px
+        rgba(16, 24, 39, 0.09),
+        0 0 20px
+        rgba(25, 182, 165, 0.07);
+}
+
+.language-select:focus {
+    border-color:
+        var(--teal);
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(25, 182, 165, 0.10),
+        0 10px 25px
+        rgba(16, 24, 39, 0.08);
+}
+
+
+/* =========================================================
+   FORM HEADING
+   ========================================================= */
+
+.form-heading {
+    margin-bottom: 27px;
+}
+
+.welcome {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--teal);
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    line-height: 1.8;
+}
+
+.form-side h2 {
+    margin-bottom: 8px;
+
+    color: var(--text-dark);
+
+    font-size: 30px;
+
+    line-height: 1.5;
+
+    font-weight: 800;
+}
+
+.form-heading p {
+    color: var(--text-soft);
+
+    font-size: 15px;
+
+    line-height: 1.9;
+}
+
+
+/* =========================================================
+   BILINGUAL TEXT
+   ========================================================= */
+
+.english-line {
+    display: block;
+
+    margin-top: 2px;
+
+    direction: ltr;
+
+    text-align: right;
+
+    color:
+        #8a93a3;
+
+    font-family:
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    font-weight: 500;
+}
+
+.form-heading .english-line {
+    margin-top: 4px;
+
+    color:
+        #8a93a3;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   GOOGLE BUTTON
+   ========================================================= */
+
+.google-button {
+    width: 100%;
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-bottom: 22px;
+
+    border:
+        1px solid
+        rgba(22, 32, 51, 0.12);
+
+    border-radius:
+        var(--radius-small);
+
+    background:
+        rgba(255, 255, 255, 0.85);
+
+    color:
+        var(--text-dark);
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease,
+        background 0.3s ease;
+}
+
+.google-button:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(25, 182, 165, 0.35);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(25, 182, 165, 0.07),
+            rgba(89, 103, 232, 0.07),
+            rgba(244, 123, 104, 0.06)
+        );
+
+    box-shadow:
+        0 12px 25px
+        rgba(16, 24, 39, 0.10);
+}
+
+.google-button:active {
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   GOOGLE ICON
+   ========================================================= */
+
+.google-icon {
+    width: 24px;
+    height: 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        #ffffff;
+
+    color:
+        #4285f4;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 2px 6px
+        rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    margin:
+        8px 0 22px;
+
+    color:
+        #8a93a3;
+
+    font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(22, 32, 51, 0.14),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.signup-form {
+    width: 100%;
+}
+
+
+/* =========================================================
+   FIELD
+   ========================================================= */
+
+.field {
+    margin-bottom: 17px;
+}
+
+.field label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color:
+        var(--text-dark);
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.field input {
+    width: 100%;
+    height: 52px;
+
+    padding:
+        0 16px;
+
+    border:
+        1px solid
+        rgba(22, 32, 51, 0.13);
+
+    border-radius:
+        var(--radius-small);
+
+    outline: none;
+
+    background:
+        rgba(255, 255, 255, 0.84);
+
+    color:
+        var(--text-dark);
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.field input:hover {
+    background:
+        #ffffff;
+
+    border-color:
+        rgba(25, 182, 165, 0.30);
+}
+
+.field input:focus {
+    background:
+        #ffffff;
+
+    border-color:
+        var(--teal);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(25, 182, 165, 0.10);
+
+    transform:
+        translateY(-1px);
+}
+
+.field input::placeholder {
+    color:
+        #9aa3b1;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.primary-button {
+    position: relative;
+
+    width: 100%;
+    min-height: 54px;
+
+    margin-top: 7px;
+
+    border: 0;
+
+    border-radius:
+        var(--radius-small);
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            100deg,
+            var(--teal) 0%,
+            #398fd4 38%,
+            var(--indigo) 66%,
+            var(--coral) 100%
+        );
+
+    background-size:
+        220% 100%;
+
+    color:
+        #ffffff;
+
+    font-family: inherit;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 13px 30px
+        rgba(50, 100, 190, 0.22);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        background-position 0.7s ease;
+}
+
+.primary-button:hover {
+    transform:
+        translateY(-3px);
+
+    background-position:
+        100% 50%;
+
+    box-shadow:
+        0 18px 38px
+        rgba(50, 100, 190, 0.28),
+        0 0 30px
+        rgba(25, 182, 165, 0.12);
+}
+
+.primary-button:active {
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   LOGIN ROW
+   ========================================================= */
+
+.login-row {
+    margin-top: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 5px;
+
+    text-align: center;
+
+    color:
+        var(--text-soft);
+
+    font-size: 14px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.login-link {
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color:
+        var(--indigo);
+
+    font-family: inherit;
+
+    font-size: inherit;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.login-link:hover {
+    color:
+        var(--teal);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   SECURITY NOTE
+   ========================================================= */
+
+.security-note {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin-top: 24px;
+    padding-top: 18px;
+
+    border-top:
+        1px solid
+        rgba(22, 32, 51, 0.08);
+
+    color:
+        #8a93a3;
+
+    font-size: 12px;
+
+    line-height: 1.8;
+}
+
+.security-icon {
+    flex: 0 0 auto;
+
+    width: 20px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(25, 182, 165, 0.10);
+
+    color:
+        var(--teal);
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   FORM MESSAGE
+   ========================================================= */
+
+.form-message {
+    min-height: 22px;
+
+    margin-top: 14px;
+
+    color:
+        var(--text-soft);
+
+    font-size: 13px;
+
+    line-height: 1.8;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   GLOBAL FOCUS
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline:
+        3px solid
+        rgba(25, 182, 165, 0.28);
+
+    outline-offset:
+        3px;
+}
+
+
+/* =========================================================
+   DISABLED
+   ========================================================= */
+
+button:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.65;
+
+    transform: none !important;
+}
+
+
+/* =========================================================
+   =========================================================
+   STUDIO DASHBOARD
+   =========================================================
    ========================================================= */
 
 
@@ -73,7 +1584,7 @@
         opacity 1s ease;
 }
 
-.light-one {
+.studio-light.light-one {
     top: -180px;
     left: -150px;
 
@@ -81,7 +1592,7 @@
         var(--teal);
 }
 
-.light-two {
+.studio-light.light-two {
     top: 5%;
     right: -180px;
 
@@ -89,7 +1600,7 @@
         var(--indigo);
 }
 
-.light-three {
+.studio-light.light-three {
     bottom: -190px;
     right: 20%;
 
@@ -139,7 +1650,7 @@
 
 
 /* =========================================================
-   INTRO HIDE
+   INTRO HIDDEN
    ========================================================= */
 
 .studio-intro.intro-hidden {
@@ -730,7 +2241,7 @@
 
 
 /* =========================================================
-   WELCOME
+   STUDIO WELCOME
    ========================================================= */
 
 .studio-welcome {
@@ -849,7 +2360,7 @@
 
 
 /* =========================================================
-   GLASS PANEL
+   GLASS PANELS
    ========================================================= */
 
 .text-panel,
@@ -994,7 +2505,7 @@
 
 
 /* =========================================================
-   TEXTAREA
+   STUDIO TEXTAREA
    ========================================================= */
 
 .studio-textarea {
@@ -1284,7 +2795,7 @@
 
 
 /* =========================================================
-   PRIMARY BUTTON
+   STUDIO PRIMARY BUTTON
    ========================================================= */
 
 .studio-main .primary-button {
@@ -1548,7 +3059,7 @@
 
 
 /* =========================================================
-   TOOLS SECTION
+   AI TOOLS SECTION
    ========================================================= */
 
 .tools-section {
@@ -1763,7 +3274,7 @@
 
 
 /* =========================================================
-   AI RESPONSE SECTION
+   AI RESPONSE
    ========================================================= */
 
 .ai-response-section {
@@ -1990,7 +3501,7 @@
 
 
 /* =========================================================
-   CONTACT SECTION
+   CONTACT
    ========================================================= */
 
 .contact-section {
@@ -2094,7 +3605,7 @@
 
 
 /* =========================================================
-   FOOTER
+   STUDIO FOOTER
    ========================================================= */
 
 .studio-footer {
@@ -2150,7 +3661,7 @@
 
 
 /* =========================================================
-   TABLET
+   STUDIO TABLET
    ========================================================= */
 
 @media (max-width: 1050px) {
@@ -2158,7 +3669,7 @@
     .studio-main {
         width:
             min(
-                100% - 28px,
+                calc(100% - 28px),
                 920px
             );
     }
@@ -2209,7 +3720,77 @@
 
 
 /* =========================================================
-   MOBILE
+   FRONT PAGE TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .page {
+        padding:
+            24px 16px;
+    }
+
+    .auth-card {
+        grid-template-columns:
+            1fr;
+
+        max-width:
+            620px;
+    }
+
+    .brand-side {
+        min-height:
+            auto;
+
+        padding:
+            45px 38px;
+    }
+
+    .form-side {
+        padding:
+            42px 38px;
+    }
+
+    .form-container {
+        max-width:
+            500px;
+    }
+
+    .logo-wrap {
+        width: 125px;
+        height: 125px;
+
+        margin-bottom:
+            25px;
+    }
+
+    .brand-logo {
+        max-width:
+            105px;
+
+        max-height:
+            105px;
+    }
+
+    .brand-side h1 {
+        font-size:
+            43px;
+    }
+
+    .brand-text p {
+        font-size:
+            17px;
+    }
+
+    .language-step {
+        margin-bottom:
+            27px;
+    }
+}
+
+
+/* =========================================================
+   STUDIO MOBILE
    ========================================================= */
 
 @media (max-width: 700px) {
@@ -2398,7 +3979,152 @@
 
 
 /* =========================================================
-   SMALL MOBILE
+   FRONT PAGE SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .page {
+        padding:
+            12px;
+    }
+
+    .auth-card {
+        border-radius:
+            23px;
+    }
+
+    .brand-side {
+        padding:
+            34px 25px;
+    }
+
+    .form-side {
+        padding:
+            30px 22px;
+    }
+
+    .logo-wrap {
+        width: 105px;
+        height: 105px;
+
+        margin-bottom:
+            22px;
+
+        border-radius:
+            23px;
+    }
+
+    .brand-logo {
+        max-width:
+            88px;
+
+        max-height:
+            88px;
+
+        border-radius:
+            16px;
+    }
+
+    .brand-small {
+        font-size:
+            10px;
+
+        letter-spacing:
+            1.2px;
+    }
+
+    .brand-side h1 {
+        font-size:
+            36px;
+    }
+
+    .brand-text p {
+        font-size:
+            16px;
+
+        line-height:
+            1.9;
+    }
+
+    .feature {
+        font-size:
+            13px;
+    }
+
+    .language-step {
+        padding:
+            17px 15px 16px;
+
+        margin-bottom:
+            25px;
+
+        border-radius:
+            16px;
+    }
+
+    .language-step-heading {
+        gap:
+            11px;
+
+        margin-bottom:
+            13px;
+    }
+
+    .step-number {
+        width:
+            34px;
+
+        height:
+            34px;
+
+        font-size:
+            14px;
+    }
+
+    .language-step-text strong {
+        font-size:
+            16px;
+    }
+
+    .language-step-text small {
+        font-size:
+            11px;
+    }
+
+    .language-select {
+        height:
+            52px;
+
+        font-size:
+            14px;
+    }
+
+    .form-side h2 {
+        font-size:
+            26px;
+    }
+
+    .google-button {
+        font-size:
+            14px;
+    }
+
+    .light {
+        width:
+            280px;
+
+        height:
+            280px;
+
+        filter:
+            blur(65px);
+    }
+}
+
+
+/* =========================================================
+   STUDIO SMALL MOBILE
    ========================================================= */
 
 @media (max-width: 430px) {
@@ -2496,12 +4222,67 @@
         font-size:
             10px;
     }
-
 }
 
 
 /* =========================================================
    VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .brand-side {
+        padding:
+            30px 20px;
+    }
+
+    .form-side {
+        padding:
+            28px 18px;
+    }
+
+    .logo-wrap {
+        width: 90px;
+        height: 90px;
+    }
+
+    .brand-logo {
+        max-width:
+            76px;
+
+        max-height:
+            76px;
+    }
+
+    .brand-side h1 {
+        font-size:
+            31px;
+    }
+
+    .language-step {
+        padding:
+            15px 13px;
+    }
+
+    .language-step-text strong {
+        font-size:
+            15px;
+    }
+
+    .form-side h2 {
+        font-size:
+            24px;
+    }
+
+    .login-row {
+        font-size:
+            13px;
+    }
+}
+
+
+/* =========================================================
+   STUDIO VERY SMALL MOBILE
    ========================================================= */
 
 @media (max-width: 340px) {
@@ -2561,17 +4342,22 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-    .studio-intro,
-    .intro-glow,
-    .intro-core,
-    .intro-logo-wrap,
-    .intro-caption,
-    .studio-main {
-        animation:
-            none !important;
+    html {
+        scroll-behavior:
+            auto;
+    }
 
-        transition:
-            none !important;
+    *,
+    *::before,
+    *::after {
+        transition-duration:
+            0.01ms !important;
+
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
     }
 
     .studio-main {
