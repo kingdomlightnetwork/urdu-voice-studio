@@ -99,7 +99,7 @@ const translations = {
             "پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے۔",
 
         signupSuccess:
-            "آپ کی معلومات درست ہیں۔\n\nاصل اکاؤنٹ سسٹم اگلے مرحلے میں فعال کیا جائے گا۔",
+            "آپ کی معلومات درست ہیں۔\n\nاب Urdu Voice Studio AI کھولا جائے گا۔",
 
         loginMessage:
             "Login سسٹم اگلے مرحلے میں فعال کیا جائے گا۔"
@@ -197,7 +197,7 @@ const translations = {
             "Password must contain at least 6 characters.",
 
         signupSuccess:
-            "Your information is valid.\n\nThe real account system will be enabled in the next stage.",
+            "Your information is valid.\n\nUrdu Voice Studio AI will now open.",
 
         loginMessage:
             "The login system will be enabled in the next stage."
@@ -295,7 +295,7 @@ const translations = {
             "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
 
         signupSuccess:
-            "معلوماتك صحيحة.\n\nسيتم تفعيل نظام الحساب الحقيقي في المرحلة التالية.",
+            "معلوماتك صحيحة.\n\nسيتم الآن فتح استوديو الصوت الأردي بالذكاء الاصطناعي.",
 
         loginMessage:
             "سيتم تفعيل نظام تسجيل الدخول في المرحلة التالية."
@@ -393,7 +393,7 @@ const translations = {
             "पासवर्ड में कम से कम 6 अक्षर होने चाहिए।",
 
         signupSuccess:
-            "आपकी जानकारी सही है।\n\nवास्तविक खाता प्रणाली अगले चरण में सक्रिय की जाएगी।",
+            "आपकी जानकारी सही है।\n\nअब Urdu Voice Studio AI खोला जाएगा।",
 
         loginMessage:
             "लॉगिन प्रणाली अगले चरण में सक्रिय की जाएगी।"
@@ -491,7 +491,7 @@ const translations = {
             "La contraseña debe tener al menos 6 caracteres.",
 
         signupSuccess:
-            "Tu información es correcta.\n\nEl sistema de cuentas real se activará en la siguiente etapa.",
+            "Tu información es correcta.\n\nAhora se abrirá Urdu Voice Studio AI.",
 
         loginMessage:
             "El sistema de inicio de sesión se activará en la siguiente etapa."
@@ -589,7 +589,7 @@ const translations = {
             "Le mot de passe doit contenir au moins 6 caractères.",
 
         signupSuccess:
-            "Vos informations sont correctes.\n\nLe véritable système de compte sera activé à l'étape suivante.",
+            "Vos informations sont correctes.\n\nUrdu Voice Studio AI va maintenant s’ouvrir.",
 
         loginMessage:
             "Le système de connexion sera activé à l'étape suivante."
@@ -687,7 +687,7 @@ const translations = {
             "Das Passwort muss mindestens 6 Zeichen enthalten.",
 
         signupSuccess:
-            "Deine Angaben sind korrekt.\n\nDas echte Kontosystem wird im nächsten Schritt aktiviert.",
+            "Deine Angaben sind korrekt.\n\nUrdu Voice Studio AI wird jetzt geöffnet.",
 
         loginMessage:
             "Das Anmeldesystem wird im nächsten Schritt aktiviert."
@@ -785,7 +785,7 @@ const translations = {
             "密码至少需要 6 个字符。",
 
         signupSuccess:
-            "您的信息正确。\n\n真正的账户系统将在下一阶段启用。",
+            "您的信息正确。\n\n现在将打开 Urdu Voice Studio AI。",
 
         loginMessage:
             "登录系统将在下一阶段启用。"
@@ -1448,11 +1448,21 @@ if (signupButton) {
 
             /* ---------------------------------
                TEMPORARY SUCCESS
+               THEN OPEN STUDIO
             --------------------------------- */
 
             showMessage(
                 t.signupSuccess
             );
+
+
+            /*
+               User presses OK on the success
+               message, then studio.html opens.
+            */
+
+            window.location.href =
+                "studio.html";
 
         }
     );
