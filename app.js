@@ -826,6 +826,9 @@ const passwordInput =
 const languageSelect =
     document.getElementById("languageSelect");
 
+const signupForm =
+    document.getElementById("signupForm");
+
 
 /* =========================================================
    SMALL HELPER
@@ -1320,7 +1323,14 @@ if (googleButton) {
 
     googleButton.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            /*
+               Prevent the button from submitting
+               any surrounding form.
+            */
+
+            event.preventDefault();
 
             showMessage(
                 translations[currentLanguage]
@@ -1334,135 +1344,184 @@ if (googleButton) {
 
 
 /* =========================================================
-   SIGN UP
+   SIGN UP VALIDATION
 ========================================================= */
+
+function processSignup(event) {
+
+    /*
+       VERY IMPORTANT:
+       Stop the browser's normal form submission.
+       Otherwise the page can reload back to index.html.
+    */
+
+    if (event) {
+
+        event.preventDefault();
+
+    }
+
+
+    const t =
+        translations[currentLanguage];
+
+
+    const email =
+        emailInput
+            ? emailInput.value.trim()
+            : "";
+
+
+    const password =
+        passwordInput
+            ? passwordInput.value.trim()
+            : "";
+
+
+    /* -----------------------------------------
+       CHECK EMAIL
+    ----------------------------------------- */
+
+    if (!email) {
+
+        showMessage(
+            t.emailRequired
+        );
+
+        if (emailInput) {
+
+            emailInput.focus();
+
+        }
+
+        return false;
+
+    }
+
+
+    /* -----------------------------------------
+       BASIC EMAIL CHECK
+    ----------------------------------------- */
+
+    if (
+        !email.includes("@") ||
+        !email.includes(".")
+    ) {
+
+        showMessage(
+            t.emailInvalid
+        );
+
+        if (emailInput) {
+
+            emailInput.focus();
+
+        }
+
+        return false;
+
+    }
+
+
+    /* -----------------------------------------
+       CHECK PASSWORD
+    ----------------------------------------- */
+
+    if (!password) {
+
+        showMessage(
+            t.passwordRequired
+        );
+
+        if (passwordInput) {
+
+            passwordInput.focus();
+
+        }
+
+        return false;
+
+    }
+
+
+    /* -----------------------------------------
+       PASSWORD LENGTH
+    ----------------------------------------- */
+
+    if (password.length < 6) {
+
+        showMessage(
+            t.passwordLength
+        );
+
+        if (passwordInput) {
+
+            passwordInput.focus();
+
+        }
+
+        return false;
+
+    }
+
+
+    /* -----------------------------------------
+       TEMPORARY SUCCESS
+    ----------------------------------------- */
+
+    showMessage(
+        t.signupSuccess
+    );
+
+
+    /*
+       After the user presses OK,
+       open the Studio page.
+
+       ./studio.html is used so the browser
+       clearly treats it as a page in the
+       same website folder.
+    */
+
+    window.location.assign(
+        "./studio.html"
+    );
+
+
+    return false;
+
+}
+
+
+/* =========================================================
+   SIGN UP FORM
+========================================================= */
+
+if (signupForm) {
+
+    signupForm.addEventListener(
+        "submit",
+        processSignup
+    );
+
+}
+
+
+/*
+   Extra protection:
+   If the button itself is clicked,
+   stop its default submit behavior.
+*/
 
 if (signupButton) {
 
     signupButton.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            const t =
-                translations[currentLanguage];
+            event.preventDefault();
 
-
-            const email =
-                emailInput
-                    ? emailInput.value.trim()
-                    : "";
-
-
-            const password =
-                passwordInput
-                    ? passwordInput.value.trim()
-                    : "";
-
-
-            /* ---------------------------------
-               CHECK EMAIL
-            --------------------------------- */
-
-            if (!email) {
-
-                showMessage(
-                    t.emailRequired
-                );
-
-                if (emailInput) {
-
-                    emailInput.focus();
-
-                }
-
-                return;
-
-            }
-
-
-            /* ---------------------------------
-               BASIC EMAIL CHECK
-            --------------------------------- */
-
-            if (
-                !email.includes("@") ||
-                !email.includes(".")
-            ) {
-
-                showMessage(
-                    t.emailInvalid
-                );
-
-                if (emailInput) {
-
-                    emailInput.focus();
-
-                }
-
-                return;
-
-            }
-
-
-            /* ---------------------------------
-               CHECK PASSWORD
-            --------------------------------- */
-
-            if (!password) {
-
-                showMessage(
-                    t.passwordRequired
-                );
-
-                if (passwordInput) {
-
-                    passwordInput.focus();
-
-                }
-
-                return;
-
-            }
-
-
-            /* ---------------------------------
-               PASSWORD LENGTH
-            --------------------------------- */
-
-            if (password.length < 6) {
-
-                showMessage(
-                    t.passwordLength
-                );
-
-                if (passwordInput) {
-
-                    passwordInput.focus();
-
-                }
-
-                return;
-
-            }
-
-
-            /* ---------------------------------
-               TEMPORARY SUCCESS
-               THEN OPEN STUDIO
-            --------------------------------- */
-
-            showMessage(
-                t.signupSuccess
-            );
-
-
-            /*
-               User presses OK on the success
-               message, then studio.html opens.
-            */
-
-            window.location.href =
-                "studio.html";
+            processSignup(event);
 
         }
     );
@@ -1522,11 +1581,9 @@ if (passwordInput) {
 
             if (event.key === "Enter") {
 
-                if (signupButton) {
+                event.preventDefault();
 
-                    signupButton.click();
-
-                }
+                processSignup(event);
 
             }
 
