@@ -16,9 +16,16 @@
     --white: #ffffff;
 
     --teal: #19b6a5;
+    --teal-light: #6fe1d5;
+
     --indigo: #5967e8;
+    --indigo-light: #8791f2;
+
     --coral: #f47b68;
+    --coral-light: #ffad9e;
+
     --champagne: #f5d98b;
+    --champagne-light: #ffe9aa;
 
     --text-dark: #162033;
     --text-soft: #697386;
@@ -215,7 +222,7 @@ body {
     position: relative;
     z-index: 5;
 
-    width: min(1100px, 100%);
+    width: min(1120px, 100%);
 
     display: grid;
 
@@ -632,13 +639,13 @@ body {
     flex-direction: column;
     justify-content: center;
 
-    padding: 55px 60px;
+    padding: 48px 60px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(255, 255, 255, 0.96),
-            rgba(238, 244, 245, 0.91)
+            rgba(255, 255, 255, 0.97),
+            rgba(238, 244, 245, 0.93)
         );
 }
 
@@ -649,9 +656,295 @@ body {
 
 .form-container {
     width: 100%;
-    max-width: 430px;
+    max-width: 440px;
 
     margin: 0 auto;
+}
+
+
+/* =========================================================
+   LANGUAGE STEP
+   ========================================================= */
+
+.language-step {
+    position: relative;
+
+    width: 100%;
+
+    margin-bottom: 30px;
+
+    padding: 20px 20px 19px;
+
+    border:
+        1px solid
+        rgba(25, 182, 165, 0.18);
+
+    border-radius:
+        var(--radius-medium);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(25, 182, 165, 0.10),
+            rgba(89, 103, 232, 0.075),
+            rgba(244, 123, 104, 0.055),
+            rgba(245, 217, 139, 0.09)
+        );
+
+    box-shadow:
+        0 12px 30px
+        rgba(16, 24, 39, 0.07),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.80);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.language-step::before {
+    content: "";
+
+    position: absolute;
+
+    top: -55px;
+    right: -45px;
+
+    width: 140px;
+    height: 140px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(89, 103, 232, 0.16),
+            transparent 68%
+        );
+
+    pointer-events: none;
+}
+
+.language-step::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: -65px;
+    left: -45px;
+
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(244, 123, 104, 0.12),
+            transparent 70%
+        );
+
+    pointer-events: none;
+}
+
+.language-step:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(25, 182, 165, 0.32);
+
+    box-shadow:
+        0 17px 38px
+        rgba(16, 24, 39, 0.10),
+        0 0 30px
+        rgba(25, 182, 165, 0.07);
+}
+
+
+/* =========================================================
+   LANGUAGE STEP HEADING
+   ========================================================= */
+
+.language-step-heading {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 16px;
+}
+
+.step-number {
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--teal),
+            var(--indigo),
+            var(--coral)
+        );
+
+    color:
+        #ffffff;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 20px
+        rgba(89, 103, 232, 0.20),
+        0 0 18px
+        rgba(25, 182, 165, 0.12);
+}
+
+.language-step-text {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+}
+
+.language-step-text strong {
+    color:
+        var(--text-dark);
+
+    font-size: 18px;
+
+    line-height: 1.8;
+
+    font-weight: 800;
+}
+
+.language-step-text small {
+    color:
+        var(--text-soft);
+
+    font-family:
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   LANGUAGE SELECTOR
+   ========================================================= */
+
+.language-selector {
+    position: relative;
+    z-index: 3;
+
+    width: 100%;
+}
+
+.language-select {
+    width: 100%;
+    height: 54px;
+
+    padding:
+        0 17px;
+
+    border:
+        1px solid
+        rgba(25, 182, 165, 0.22);
+
+    border-radius:
+        var(--radius-small);
+
+    outline: none;
+
+    appearance: auto;
+
+    background:
+        linear-gradient(
+            100deg,
+            rgba(255, 255, 255, 0.95),
+            rgba(244, 248, 249, 0.94)
+        );
+
+    color:
+        var(--text-dark);
+
+    font-family:
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 7px 18px
+        rgba(16, 24, 39, 0.06);
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease,
+        background 0.3s ease;
+}
+
+.language-select:hover {
+    border-color:
+        rgba(25, 182, 165, 0.48);
+
+    background:
+        #ffffff;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 10px 24px
+        rgba(16, 24, 39, 0.09),
+        0 0 20px
+        rgba(25, 182, 165, 0.07);
+}
+
+.language-select:focus {
+    border-color:
+        var(--teal);
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(25, 182, 165, 0.10),
+        0 10px 25px
+        rgba(16, 24, 39, 0.08);
 }
 
 
@@ -660,13 +953,13 @@ body {
    ========================================================= */
 
 .form-heading {
-    margin-bottom: 28px;
+    margin-bottom: 27px;
 }
 
 .welcome {
     display: block;
 
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 
     color: var(--teal);
 
@@ -678,7 +971,7 @@ body {
 }
 
 .form-side h2 {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 
     color: var(--text-dark);
 
@@ -695,6 +988,47 @@ body {
     font-size: 15px;
 
     line-height: 1.9;
+}
+
+
+/* =========================================================
+   BILINGUAL TEXT SUPPORT
+   ========================================================= */
+
+.english-line {
+    display: block;
+
+    margin-top: 2px;
+
+    direction: ltr;
+
+    text-align: right;
+
+    color:
+        #8a93a3;
+
+    font-family:
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    font-weight: 500;
+}
+
+.form-heading .english-line {
+    margin-top: 4px;
+
+    color:
+        #8a93a3;
+
+    font-size: 12px;
+
+    line-height: 1.6;
 }
 
 
@@ -1149,7 +1483,8 @@ body {
 
 button:focus-visible,
 a:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
     outline:
         3px solid
         rgba(25, 182, 165, 0.28);
@@ -1204,6 +1539,11 @@ button:disabled {
             42px 38px;
     }
 
+    .form-container {
+        max-width:
+            500px;
+    }
+
     .logo-wrap {
         width: 125px;
         height: 125px;
@@ -1228,6 +1568,11 @@ button:disabled {
     .brand-text p {
         font-size:
             17px;
+    }
+
+    .language-step {
+        margin-bottom:
+            27px;
     }
 }
 
@@ -1255,7 +1600,7 @@ button:disabled {
 
     .form-side {
         padding:
-            34px 25px;
+            30px 22px;
     }
 
     .logo-wrap {
@@ -1306,6 +1651,54 @@ button:disabled {
             13px;
     }
 
+    .language-step {
+        padding:
+            17px 15px 16px;
+
+        margin-bottom:
+            25px;
+
+        border-radius:
+            16px;
+    }
+
+    .language-step-heading {
+        gap:
+            11px;
+
+        margin-bottom:
+            13px;
+    }
+
+    .step-number {
+        width:
+            34px;
+
+        height:
+            34px;
+
+        font-size:
+            14px;
+    }
+
+    .language-step-text strong {
+        font-size:
+            16px;
+    }
+
+    .language-step-text small {
+        font-size:
+            11px;
+    }
+
+    .language-select {
+        height:
+            52px;
+
+        font-size:
+            14px;
+    }
+
     .form-side h2 {
         font-size:
             26px;
@@ -1342,7 +1735,7 @@ button:disabled {
 
     .form-side {
         padding:
-            30px 20px;
+            28px 18px;
     }
 
     .logo-wrap {
@@ -1361,6 +1754,16 @@ button:disabled {
     .brand-side h1 {
         font-size:
             31px;
+    }
+
+    .language-step {
+        padding:
+            15px 13px;
+    }
+
+    .language-step-text strong {
+        font-size:
+            15px;
     }
 
     .form-side h2 {
