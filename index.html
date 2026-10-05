@@ -1,858 +1,230 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Urdu Voice Studio</title>
 
     <meta
         name="description"
-        content="Urdu Voice Studio — اپنے اردو الفاظ کو خوبصورت آواز دیں۔"
+        content="Urdu Voice Studio — اپنے اردو الفاظ کو خوبصورت اور قدرتی آواز دیں۔"
     >
 
-    <meta name="theme-color" content="#101827">
-
-    <style>
-        /* =========================================================
-           URDU VOICE STUDIO
-           Fast single-page foundation
-        ========================================================= */
-
-        :root {
-            --ink: #101827;
-            --ink-soft: #172238;
-            --mist: #eef4f5;
-            --white: #ffffff;
-
-            --teal: #19b6a5;
-            --indigo: #5967e8;
-            --coral: #f47b68;
-            --champagne: #f5d98b;
-
-            --shadow:
-                0 25px 70px rgba(16, 24, 39, 0.18);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family:
-                "Noto Nastaliq Urdu",
-                "Noto Naskh Arabic",
-                "Segoe UI",
-                Tahoma,
-                Arial,
-                sans-serif;
-
-            color: var(--ink);
-            background: var(--ink);
-            overflow-x: hidden;
-        }
-
-        /* =========================================================
-           BACKGROUND LIGHT
-        ========================================================= */
-
-        .page {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 28px;
-            overflow: hidden;
-
-            background:
-                radial-gradient(
-                    circle at 12% 18%,
-                    rgba(25, 182, 165, 0.28),
-                    transparent 32%
-                ),
-                radial-gradient(
-                    circle at 86% 16%,
-                    rgba(89, 103, 232, 0.28),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 78% 88%,
-                    rgba(244, 123, 104, 0.25),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 25% 88%,
-                    rgba(245, 217, 139, 0.18),
-                    transparent 28%
-                ),
-                var(--ink);
-        }
-
-        .light {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(55px);
-            pointer-events: none;
-            opacity: 0.35;
-            transition:
-                transform 1s ease,
-                opacity 1s ease;
-        }
-
-        .light.one {
-            width: 260px;
-            height: 260px;
-            background: var(--teal);
-            top: -80px;
-            left: -80px;
-        }
-
-        .light.two {
-            width: 230px;
-            height: 230px;
-            background: var(--indigo);
-            top: -70px;
-            right: -60px;
-        }
-
-        .light.three {
-            width: 240px;
-            height: 240px;
-            background: var(--coral);
-            bottom: -100px;
-            right: 20%;
-        }
-
-        .light.four {
-            width: 210px;
-            height: 210px;
-            background: var(--champagne);
-            bottom: -90px;
-            left: 12%;
-        }
-
-        .page:hover .light.one {
-            transform: translate(35px, 20px);
-        }
-
-        .page:hover .light.two {
-            transform: translate(-30px, 25px);
-        }
-
-        .page:hover .light.three {
-            transform: translate(-20px, -25px);
-        }
-
-        .page:hover .light.four {
-            transform: translate(25px, -20px);
-        }
-
-        /* =========================================================
-           MAIN CARD
-        ========================================================= */
-
-        .auth-card {
-            position: relative;
-            z-index: 2;
-
-            width: min(1120px, 100%);
-            min-height: 650px;
-
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-
-            direction: ltr;
-
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 30px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(255,255,255,0.12),
-                    rgba(255,255,255,0.04)
-                );
-
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-
-            box-shadow: var(--shadow);
-
-            transition:
-                transform 0.45s ease,
-                box-shadow 0.45s ease;
-        }
-
-        .auth-card:hover {
-            transform: translateY(-5px);
-
-            box-shadow:
-                0 35px 90px rgba(16, 24, 39, 0.28);
-        }
-
-        /* =========================================================
-           BRAND SIDE
-        ========================================================= */
-
-        .brand-side {
-            position: relative;
-            min-height: 650px;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-
-            padding: 55px;
-
-            direction: rtl;
-
-            background:
-                radial-gradient(
-                    circle at 20% 25%,
-                    rgba(25,182,165,0.45),
-                    transparent 35%
-                ),
-                radial-gradient(
-                    circle at 80% 75%,
-                    rgba(89,103,232,0.40),
-                    transparent 35%
-                ),
-                linear-gradient(
-                    145deg,
-                    rgba(25,182,165,0.12),
-                    rgba(89,103,232,0.13),
-                    rgba(244,123,104,0.10)
-                );
-        }
-
-        .brand-side::after {
-            content: "";
-            position: absolute;
-            inset: 20px;
-            border: 1px solid rgba(255,255,255,0.10);
-            border-radius: 24px;
-            pointer-events: none;
-        }
-
-        .brand-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: var(--white);
-        }
-
-        /* Temporary logo area.
-           Actual Kingdom Light Network logo will be added later. */
-
-        .logo-mark {
-            width: 112px;
-            height: 112px;
-
-            margin: 0 auto 28px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 32px;
-
-            font-family: Arial, sans-serif;
-            font-size: 34px;
-            font-weight: 800;
-            letter-spacing: -2px;
-
-            color: var(--white);
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--teal),
-                    var(--indigo) 48%,
-                    var(--coral)
-                );
-
-            box-shadow:
-                0 0 0 8px rgba(255,255,255,0.06),
-                0 18px 50px rgba(0,0,0,0.22);
-
-            transform: rotate(-3deg);
-
-            transition:
-                transform 0.45s ease,
-                box-shadow 0.45s ease;
-        }
-
-        .brand-side:hover .logo-mark {
-            transform:
-                rotate(0deg)
-                scale(1.05);
-
-            box-shadow:
-                0 0 0 10px rgba(255,255,255,0.07),
-                0 20px 65px rgba(25,182,165,0.25);
-        }
-
-        .brand-title {
-            font-family:
-                "Segoe UI",
-                Tahoma,
-                Arial,
-                sans-serif;
-
-            font-size: clamp(34px, 4vw, 54px);
-            font-weight: 800;
-            letter-spacing: -1.5px;
-
-            margin-bottom: 12px;
-
-            background:
-                linear-gradient(
-                    100deg,
-                    #ffffff,
-                    var(--champagne),
-                    #ffffff
-                );
-
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .brand-subtitle {
-            max-width: 440px;
-
-            font-size: 22px;
-            line-height: 2;
-
-            color: rgba(255,255,255,0.88);
-
-            margin-bottom: 28px;
-        }
-
-        .brand-note {
-            font-family:
-                "Segoe UI",
-                Tahoma,
-                Arial,
-                sans-serif;
-
-            font-size: 13px;
-            letter-spacing: 1.5px;
-            color: rgba(255,255,255,0.55);
-        }
-
-        /* =========================================================
-           FORM SIDE
-        ========================================================= */
-
-        .form-side {
-            min-height: 650px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 55px;
-
-            direction: rtl;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(255,255,255,0.97),
-                    rgba(244,248,249,0.93)
-                );
-        }
-
-        .form-box {
-            width: min(390px, 100%);
-        }
-
-        .welcome {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 7px;
-        }
-
-        .form-intro {
-            color: #687284;
-            font-size: 16px;
-            line-height: 1.9;
-            margin-bottom: 26px;
-        }
-
-        /* =========================================================
-           GOOGLE BUTTON
-        ========================================================= */
-
-        .google-button {
-            width: 100%;
-            min-height: 54px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-
-            border: 1px solid #dfe4ea;
-            border-radius: 14px;
-
-            background: #ffffff;
-            color: #202733;
-
-            font-family: inherit;
-            font-size: 16px;
-            font-weight: 700;
-
-            cursor: pointer;
-
-            transition:
-                transform 0.25s ease,
-                box-shadow 0.25s ease,
-                border-color 0.25s ease;
-        }
-
-        .google-button:hover {
-            transform: translateY(-2px);
-
-            border-color: rgba(89,103,232,0.45);
-
-            box-shadow:
-                0 10px 28px rgba(89,103,232,0.12);
-        }
-
-        .google-icon {
-            width: 22px;
-            height: 22px;
-
-            display: grid;
-            place-items: center;
-
-            font-family: Arial, sans-serif;
-            font-size: 19px;
-            font-weight: 800;
-
-            color: #4285f4;
-        }
-
-        /* =========================================================
-           DIVIDER
-        ========================================================= */
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-
-            margin: 24px 0;
-
-            color: #9aa3af;
-            font-size: 13px;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #e3e7ec;
-        }
-
-        /* =========================================================
-           INPUTS
-        ========================================================= */
-
-        .field {
-            margin-bottom: 17px;
-        }
-
-        .field label {
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-size: 14px;
-            font-weight: 700;
-            color: #3e4756;
-        }
-
-        .field input {
-            width: 100%;
-            height: 54px;
-
-            padding: 0 16px;
-
-            border: 1px solid #dfe4ea;
-            border-radius: 14px;
-
-            outline: none;
-
-            background: #ffffff;
-            color: #18202c;
-
-            font-family: inherit;
-            font-size: 16px;
-
-            transition:
-                border-color 0.25s ease,
-                box-shadow 0.25s ease,
-                transform 0.25s ease;
-        }
-
-        .field input:hover {
-            border-color: #b8c0cc;
-        }
-
-        .field input:focus {
-            border-color: var(--indigo);
-
-            box-shadow:
-                0 0 0 4px rgba(89,103,232,0.10);
-        }
-
-        /* =========================================================
-           SIGN UP BUTTON
-        ========================================================= */
-
-        .signup-button {
-            position: relative;
-
-            width: 100%;
-            min-height: 56px;
-
-            margin-top: 5px;
-
-            border: 0;
-            border-radius: 15px;
-
-            overflow: hidden;
-
-            background:
-                linear-gradient(
-                    100deg,
-                    var(--teal),
-                    var(--indigo) 48%,
-                    var(--coral)
-                );
-
-            color: #ffffff;
-
-            font-family: inherit;
-            font-size: 17px;
-            font-weight: 800;
-
-            cursor: pointer;
-
-            box-shadow:
-                0 12px 30px rgba(89,103,232,0.20);
-
-            transition:
-                transform 0.25s ease,
-                box-shadow 0.25s ease;
-        }
-
-        .signup-button::before {
-            content: "";
-
-            position: absolute;
-            inset: 0;
-
-            background:
-                linear-gradient(
-                    100deg,
-                    transparent,
-                    rgba(255,255,255,0.20),
-                    transparent
-                );
-
-            transform: translateX(-100%);
-
-            transition:
-                transform 0.65s ease;
-        }
-
-        .signup-button:hover {
-            transform: translateY(-2px);
-
-            box-shadow:
-                0 17px 38px rgba(89,103,232,0.28);
-        }
-
-        .signup-button:hover::before {
-            transform: translateX(100%);
-        }
-
-        .login-text {
-            text-align: center;
-
-            margin-top: 23px;
-
-            color: #737d8d;
-            font-size: 14px;
-        }
-
-        .login-link {
-            border: 0;
-            padding: 0;
-            margin-right: 5px;
-
-            background: transparent;
-
-            color: #5967e8;
-
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: 800;
-
-            cursor: pointer;
-        }
-
-        .login-link:hover {
-            text-decoration: underline;
-        }
-
-        .security-note {
-            text-align: center;
-
-            margin-top: 25px;
-
-            font-family:
-                "Segoe UI",
-                Tahoma,
-                Arial,
-                sans-serif;
-
-            font-size: 11px;
-            color: #a0a8b4;
-        }
-
-        /* =========================================================
-           MOBILE
-        ========================================================= */
-
-        @media (max-width: 820px) {
-
-            .page {
-                padding: 15px;
-            }
-
-            .auth-card {
-                grid-template-columns: 1fr;
-                min-height: auto;
-                border-radius: 24px;
-            }
-
-            .brand-side {
-                min-height: 390px;
-                padding: 40px 25px;
-            }
-
-            .form-side {
-                min-height: auto;
-                padding: 42px 25px;
-            }
-
-            .brand-title {
-                font-size: 38px;
-            }
-
-            .brand-subtitle {
-                font-size: 19px;
-            }
-
-            .logo-mark {
-                width: 90px;
-                height: 90px;
-                border-radius: 27px;
-                font-size: 28px;
-            }
-        }
-
-        @media (max-width: 430px) {
-
-            .page {
-                padding: 8px;
-            }
-
-            .auth-card {
-                border-radius: 20px;
-            }
-
-            .brand-side {
-                min-height: 350px;
-            }
-
-            .form-side {
-                padding: 35px 20px;
-            }
-
-            .welcome {
-                font-size: 27px;
-            }
-        }
-
-        /* =========================================================
-           REDUCED MOTION
-        ========================================================= */
-
-        @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-                scroll-behavior: auto !important;
-                transition-duration: 0.01ms !important;
-                animation-duration: 0.01ms !important;
-            }
-        }
-    </style>
+    <meta
+        name="theme-color"
+        content="#101827"
+    >
+
+    <!-- Main Stylesheet -->
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
+
 
 <body>
 
     <main class="page">
 
-        <!-- Soft blended lights -->
+        <!-- =================================================
+             BACKGROUND LIGHTS
+             ================================================= -->
+
         <div class="light one"></div>
         <div class="light two"></div>
         <div class="light three"></div>
         <div class="light four"></div>
 
+
+        <!-- =================================================
+             AUTHENTICATION CARD
+             ================================================= -->
+
         <section class="auth-card">
 
-            <!-- =====================================================
-                 BRAND SIDE
-            ====================================================== -->
+
+            <!-- =================================================
+                 LEFT BRAND SIDE
+                 ================================================= -->
 
             <div class="brand-side">
 
-                <div class="brand-content">
-
-                    <div class="logo-mark" aria-label="Kingdom Light Network">
-                        KLN
-                    </div>
-
-                    <h1 class="brand-title">
-                        Urdu Voice Studio
-                    </h1>
-
-                    <p class="brand-subtitle">
-                        اپنے اردو الفاظ کو<br>
-                        خوبصورت آواز دیں
-                    </p>
-
-                    <p class="brand-note">
-                        SIMPLE · FAST · URDU · VOICE
-                    </p>
-
+                <div class="brand-label">
+                    SIMPLE · FAST · URDU · VOICE
                 </div>
+
+
+                <!-- Temporary Logo
+                     Actual Kingdom Light Network logo
+                     will be added in the next stage.
+                -->
+
+                <div class="logo-mark">
+                    KLN
+                </div>
+
+
+                <h1>
+                    اردو وائس اسٹوڈیو
+                </h1>
+
+
+                <p class="tagline">
+                    اپنے اردو الفاظ کو خوبصورت،
+                    قدرتی اور واضح آواز دیں۔
+                </p>
 
             </div>
 
 
-            <!-- =====================================================
-                 SIGN UP SIDE
-            ====================================================== -->
+
+            <!-- =================================================
+                 RIGHT FORM SIDE
+                 ================================================= -->
 
             <div class="form-side">
 
-                <div class="form-box">
-
-                    <h2 class="welcome">
-                        خوش آمدید
-                    </h2>
-
-                    <p class="form-intro">
-                        اپنا اکاؤنٹ بنائیں اور اپنی اردو تحریر کو
-                        خوبصورت آواز میں تبدیل کریں۔
-                    </p>
+                <h2>
+                    خوش آمدید
+                </h2>
 
 
-                    <button
-                        class="google-button"
-                        type="button"
-                        id="googleButton"
+                <p class="form-intro">
+                    اپنا اکاؤنٹ بنائیں اور اردو متن کو
+                    آواز میں تبدیل کرنے کے لیے تیار ہوں۔
+                </p>
+
+
+
+                <!-- =================================================
+                     GOOGLE BUTTON
+                     ================================================= -->
+
+                <button
+                    type="button"
+                    class="google-button"
+                    id="googleButton"
+                >
+                    <span>
+                        G
+                    </span>
+
+                    <span>
+                        Google کے ساتھ جاری رکھیں
+                    </span>
+                </button>
+
+
+
+                <!-- =================================================
+                     DIVIDER
+                     ================================================= -->
+
+                <div class="divider">
+                    <span>یا</span>
+                </div>
+
+
+
+                <!-- =================================================
+                     EMAIL
+                     ================================================= -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        ای میل
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="اپنا ای میل درج کریں"
+                        autocomplete="email"
                     >
-                        <span class="google-icon">G</span>
-                        <span>Google سے جاری رکھیں</span>
-                    </button>
+
+                </div>
 
 
-                    <div class="divider">
-                        <span>یا Email سے</span>
-                    </div>
 
+                <!-- =================================================
+                     PASSWORD
+                     ================================================= -->
 
-                    <div class="field">
+                <div class="form-group">
 
-                        <label for="email">
-                            Email
-                        </label>
+                    <label for="password">
+                        پاس ورڈ
+                    </label>
 
-                        <input
-                            id="email"
-                            type="email"
-                            placeholder="اپنا Email لکھیں"
-                            autocomplete="email"
-                        >
-
-                    </div>
-
-
-                    <div class="field">
-
-                        <label for="password">
-                            Password
-                        </label>
-
-                        <input
-                            id="password"
-                            type="password"
-                            placeholder="اپنا Password لکھیں"
-                            autocomplete="new-password"
-                        >
-
-                    </div>
-
-
-                    <button
-                        class="signup-button"
-                        type="button"
-                        id="signupButton"
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="اپنا پاس ورڈ درج کریں"
+                        autocomplete="new-password"
                     >
-                        اکاؤنٹ بنائیں
-                    </button>
+
+                </div>
 
 
-                    <p class="login-text">
 
-                        پہلے سے اکاؤنٹ موجود ہے؟
+                <!-- =================================================
+                     SIGN UP
+                     ================================================= -->
 
-                        <button
-                            class="login-link"
-                            type="button"
-                            id="loginButton"
-                        >
-                            Login
-                        </button>
-
-                    </p>
+                <button
+                    type="button"
+                    class="signup-button"
+                    id="signupButton"
+                >
+                    اکاؤنٹ بنائیں
+                </button>
 
 
-                    <p class="security-note">
+
+                <!-- =================================================
+                     LOGIN
+                     ================================================= -->
+
+                <div class="login-row">
+
+                    پہلے سے اکاؤنٹ موجود ہے؟
+
+                    <a
+                        href="#"
+                        id="loginLink"
+                    >
+                        لاگ اِن کریں
+                    </a>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SECURITY NOTE
+                     ================================================= -->
+
+                <div class="security-note">
+
+                    <span>
+                        🔒
+                    </span>
+
+                    <span>
                         آپ کی معلومات محفوظ رکھنے کے لیے
-                        محفوظ Authentication استعمال کیا جائے گا۔
-                    </p>
+                        اکاؤنٹ سسٹم اگلے مرحلے میں مکمل طور پر
+                        فعال کیا جائے گا۔
+                    </span>
 
                 </div>
 
@@ -863,11 +235,12 @@
     </main>
 
 
+
+    <!-- =================================================
+         TEMPORARY UI SCRIPT
+         ================================================= -->
+
     <script>
-        /* =========================================================
-           TEMPORARY UI ONLY
-           Real authentication will be connected later.
-        ========================================================= */
 
         const googleButton =
             document.getElementById("googleButton");
@@ -875,53 +248,78 @@
         const signupButton =
             document.getElementById("signupButton");
 
-        const loginButton =
-            document.getElementById("loginButton");
+        const loginLink =
+            document.getElementById("loginLink");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const passwordInput =
+            document.getElementById("password");
 
 
-        googleButton.addEventListener("click", function () {
+        /* Google */
 
-            alert(
-                "Google Sign-In اگلے مرحلے میں فعال کیا جائے گا۔"
-            );
-
-        });
-
-
-        signupButton.addEventListener("click", function () {
-
-            const email =
-                document.getElementById("email").value.trim();
-
-            const password =
-                document.getElementById("password").value.trim();
-
-
-            if (!email || !password) {
+        googleButton.addEventListener(
+            "click",
+            function () {
 
                 alert(
-                    "براہِ کرم Email اور Password درج کریں۔"
+                    "Google Sign-In اگلے مرحلے میں فعال کیا جائے گا۔"
                 );
 
-                return;
             }
+        );
 
 
-            alert(
-                "اکاؤنٹ سسٹم اگلے مرحلے میں فعال کیا جائے گا۔"
-            );
+        /* Signup */
 
-        });
+        signupButton.addEventListener(
+            "click",
+            function () {
+
+                const email =
+                    emailInput.value.trim();
+
+                const password =
+                    passwordInput.value.trim();
 
 
-        loginButton.addEventListener("click", function () {
+                if (!email || !password) {
 
-            alert(
-                "Login سسٹم اگلے مرحلے میں فعال کیا جائے گا۔"
-            );
+                    alert(
+                        "براہِ کرم ای میل اور پاس ورڈ درج کریں۔"
+                    );
 
-        });
+                    return;
+                }
+
+
+                alert(
+                    "اکاؤنٹ سسٹم اگلے مرحلے میں فعال کیا جائے گا۔"
+                );
+
+            }
+        );
+
+
+        /* Login */
+
+        loginLink.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                alert(
+                    "Login سسٹم اگلے مرحلے میں فعال کیا جائے گا۔"
+                );
+
+            }
+        );
+
     </script>
 
 </body>
+
 </html>
