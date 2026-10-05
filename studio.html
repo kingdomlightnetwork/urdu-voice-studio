@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
 
@@ -8,1142 +9,1512 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>اردو وائس اسٹوڈیو AI</title>
+    <title>وائس اسٹوڈیو — اردو AI معاون</title>
 
     <meta
         name="description"
-        content="اردو وائس اسٹوڈیو AI — قدرتی اور واضح آواز کے ساتھ اردو ٹیکسٹ کو آواز میں تبدیل کریں۔"
+        content="وائس اسٹوڈیو — اردو AI معاون، متن تیار کریں، بہتر کریں اور آواز میں تبدیل کریں۔"
     >
 
     <meta
         name="theme-color"
-        content="#071f24"
+        content="#102f35"
     >
 
     <link
         rel="stylesheet"
         href="style.css"
     >
-
-    <style>
-
-        /* =================================================
-           STUDIO INTRO
-        ================================================= */
-
-        .studio-page {
-            min-height: 100vh;
-            position: relative;
-            overflow: hidden;
-            background:
-                radial-gradient(
-                    circle at 50% 45%,
-                    rgba(255, 190, 130, 0.10),
-                    transparent 25%
-                ),
-                radial-gradient(
-                    circle at 30% 30%,
-                    rgba(45, 170, 160, 0.12),
-                    transparent 35%
-                ),
-                radial-gradient(
-                    circle at 70% 65%,
-                    rgba(90, 85, 180, 0.12),
-                    transparent 35%
-                ),
-                #071f24;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .studio-intro {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background:
-                radial-gradient(
-                    circle at center,
-                    rgba(24, 74, 77, 0.22),
-                    rgba(4, 20, 24, 0.98) 70%
-                );
-
-            transition:
-                opacity 1s ease,
-                visibility 1s ease;
-        }
-
-        .studio-intro.hide {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        /* =================================================
-           LIGHT / MIST
-        ================================================= */
-
-        .intro-light {
-            position: absolute;
-            width: 320px;
-            height: 320px;
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(255, 211, 160, 0.22) 0%,
-                    rgba(69, 177, 166, 0.10) 35%,
-                    transparent 72%
-                );
-
-            filter: blur(18px);
-
-            animation:
-                introLight 4s ease-in-out infinite;
-        }
-
-        @keyframes introLight {
-
-            0% {
-                transform: scale(0.45);
-                opacity: 0.15;
-            }
-
-            50% {
-                transform: scale(1.05);
-                opacity: 0.75;
-            }
-
-            100% {
-                transform: scale(0.65);
-                opacity: 0.25;
-            }
-        }
-
-        /* =================================================
-           CENTRAL POINT
-        ================================================= */
-
-        .intro-core {
-            position: relative;
-
-            width: 16px;
-            height: 16px;
-
-            border-radius: 50%;
-
-            background: rgba(255, 220, 175, 0.95);
-
-            box-shadow:
-                0 0 10px rgba(255, 220, 175, 0.85),
-                0 0 30px rgba(255, 170, 120, 0.55),
-                0 0 70px rgba(66, 185, 175, 0.35);
-
-            animation:
-                coreExpand 2.2s
-                cubic-bezier(.22,.61,.36,1)
-                forwards;
-        }
-
-        @keyframes coreExpand {
-
-            0% {
-                width: 5px;
-                height: 5px;
-                opacity: 0;
-                transform: scale(0.5);
-            }
-
-            20% {
-                opacity: 1;
-            }
-
-            55% {
-                width: 35px;
-                height: 35px;
-                transform: scale(1);
-            }
-
-            100% {
-                width: 190px;
-                height: 190px;
-                opacity: 0;
-                transform: scale(1.25);
-            }
-        }
-
-        /* =================================================
-           LOGO
-        ================================================= */
-
-        .intro-logo-wrap {
-            position: absolute;
-
-            width: min(330px, 70vw);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            opacity: 0;
-
-            transform:
-                scale(0.15)
-                rotate(-18deg);
-
-            filter:
-                blur(10px)
-                drop-shadow(
-                    0 0 0 rgba(255, 211, 160, 0)
-                );
-
-            animation:
-                logoReveal 3.8s
-                cubic-bezier(.18,.72,.25,1)
-                1.1s
-                forwards;
-        }
-
-        .intro-logo {
-            display: block;
-
-            width: 100%;
-            height: auto;
-
-            object-fit: contain;
-        }
-
-        @keyframes logoReveal {
-
-            0% {
-                opacity: 0;
-                transform:
-                    scale(0.08)
-                    rotate(-20deg);
-
-                filter:
-                    blur(14px)
-                    drop-shadow(
-                        0 0 0
-                        rgba(255, 211, 160, 0)
-                    );
-            }
-
-            25% {
-                opacity: 0.25;
-            }
-
-            55% {
-                opacity: 0.78;
-
-                transform:
-                    scale(0.82)
-                    rotate(5deg);
-
-                filter:
-                    blur(3px)
-                    drop-shadow(
-                        0 0 35px
-                        rgba(255, 211, 160, 0.30)
-                    );
-            }
-
-            78% {
-                opacity: 1;
-
-                transform:
-                    scale(1.05)
-                    rotate(-2deg);
-
-                filter:
-                    blur(0)
-                    drop-shadow(
-                        0 0 48px
-                        rgba(68, 186, 174, 0.32)
-                    );
-            }
-
-            100% {
-                opacity: 1;
-
-                transform:
-                    scale(1)
-                    rotate(0deg);
-
-                filter:
-                    blur(0)
-                    drop-shadow(
-                        0 0 28px
-                        rgba(255, 211, 160, 0.20)
-                    );
-            }
-        }
-
-        /* =================================================
-           INTRO TEXT
-        ================================================= */
-
-        .intro-caption {
-            position: absolute;
-
-            bottom: 12%;
-
-            text-align: center;
-
-            opacity: 0;
-
-            animation:
-                captionReveal 1.5s ease
-                3.4s
-                forwards;
-        }
-
-        .intro-caption strong {
-            display: block;
-
-            color: rgba(255, 235, 215, 0.95);
-
-            font-size: 1.1rem;
-
-            font-weight: 600;
-
-            letter-spacing: 0.02em;
-        }
-
-        .intro-caption span {
-            display: block;
-
-            margin-top: 7px;
-
-            color: rgba(190, 220, 220, 0.68);
-
-            font-size: 0.78rem;
-        }
-
-        @keyframes captionReveal {
-
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* =================================================
-           MAIN STUDIO
-        ================================================= */
-
-        .studio-content {
-
-            width: min(1180px, 92%);
-
-            padding: 40px 0;
-
-            opacity: 0;
-
-            transform: translateY(20px);
-
-            animation:
-                studioReveal 1.2s ease
-                5.2s
-                forwards;
-        }
-
-        @keyframes studioReveal {
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .studio-header {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 20px;
-
-            margin-bottom: 28px;
-        }
-
-        .studio-brand {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 15px;
-        }
-
-        .studio-brand-logo {
-
-            width: 58px;
-            height: 58px;
-
-            object-fit: contain;
-
-            border-radius: 14px;
-
-            filter:
-                drop-shadow(
-                    0 0 14px
-                    rgba(255, 211, 160, 0.18)
-                );
-        }
-
-        .studio-brand h1 {
-
-            margin: 0;
-
-            color: #fff;
-
-            font-size: clamp(
-                1.25rem,
-                3vw,
-                1.8rem
-            );
-        }
-
-        .studio-brand p {
-
-            margin: 4px 0 0;
-
-            color: rgba(210, 230, 230, 0.65);
-
-            font-size: 0.85rem;
-        }
-
-        .studio-status {
-
-            padding: 8px 14px;
-
-            border-radius: 999px;
-
-            background:
-                rgba(255,255,255,0.05);
-
-            border:
-                1px solid
-                rgba(255,255,255,0.08);
-
-            color:
-                rgba(230,245,245,0.72);
-
-            font-size: 0.78rem;
-        }
-
-        /* =================================================
-           WORKSPACE
-        ================================================= */
-
-        .studio-workspace {
-
-            display: grid;
-
-            grid-template-columns:
-                minmax(0, 1.6fr)
-                minmax(280px, 0.8fr);
-
-            gap: 22px;
-        }
-
-        .studio-panel {
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(255,255,255,0.075),
-                    rgba(255,255,255,0.025)
-                );
-
-            border:
-                1px solid
-                rgba(255,255,255,0.08);
-
-            border-radius: 24px;
-
-            padding: 24px;
-
-            box-shadow:
-                0 20px 60px
-                rgba(0,0,0,0.20);
-
-            backdrop-filter: blur(14px);
-
-            transition:
-                transform .3s ease,
-                border-color .3s ease,
-                box-shadow .3s ease;
-        }
-
-        .studio-panel:hover {
-
-            transform: translateY(-3px);
-
-            border-color:
-                rgba(255, 211, 160, 0.18);
-
-            box-shadow:
-                0 25px 70px
-                rgba(0,0,0,0.27);
-        }
-
-        .studio-panel h2 {
-
-            margin: 0 0 8px;
-
-            color: #fff;
-
-            font-size: 1.15rem;
-        }
-
-        .studio-panel-description {
-
-            margin: 0 0 20px;
-
-            color:
-                rgba(205,225,225,0.65);
-
-            font-size: 0.84rem;
-
-            line-height: 1.7;
-        }
-
-        .studio-textarea {
-
-            width: 100%;
-
-            min-height: 360px;
-
-            resize: vertical;
-
-            box-sizing: border-box;
-
-            padding: 18px;
-
-            border-radius: 17px;
-
-            border:
-                1px solid
-                rgba(255,255,255,0.08);
-
-            outline: none;
-
-            background:
-                rgba(3, 20, 24, 0.55);
-
-            color: #fff;
-
-            font-family:
-                "Noto Nastaliq Urdu",
-                "Noto Sans Arabic",
-                sans-serif;
-
-            font-size: 1.05rem;
-
-            line-height: 2;
-
-            direction: rtl;
-
-            transition:
-                border-color .25s ease,
-                box-shadow .25s ease;
-        }
-
-        .studio-textarea::placeholder {
-
-            color:
-                rgba(205,225,225,0.38);
-        }
-
-        .studio-textarea:focus {
-
-            border-color:
-                rgba(255,211,160,0.30);
-
-            box-shadow:
-                0 0 0 4px
-                rgba(255,211,160,0.05);
-        }
-
-        /* =================================================
-           CONTROLS
-        ================================================= */
-
-        .studio-controls {
-
-            display: grid;
-
-            gap: 14px;
-
-            margin-top: 18px;
-        }
-
-        .studio-control {
-
-            padding: 15px;
-
-            border-radius: 16px;
-
-            background:
-                rgba(255,255,255,0.035);
-
-            border:
-                1px solid
-                rgba(255,255,255,0.055);
-        }
-
-        .studio-control label {
-
-            display: block;
-
-            margin-bottom: 8px;
-
-            color:
-                rgba(230,245,245,0.76);
-
-            font-size: 0.8rem;
-        }
-
-        .studio-select {
-
-            width: 100%;
-
-            box-sizing: border-box;
-
-            padding: 11px 12px;
-
-            border-radius: 11px;
-
-            border:
-                1px solid
-                rgba(255,255,255,0.08);
-
-            background:
-                rgba(3,20,24,0.75);
-
-            color: #fff;
-
-            outline: none;
-        }
-
-        .studio-actions {
-
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 10px;
-
-            margin-top: 18px;
-        }
-
-        .studio-button {
-
-            border: none;
-
-            border-radius: 12px;
-
-            padding: 12px 18px;
-
-            cursor: pointer;
-
-            color: #fff;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(52,145,139,0.90),
-                    rgba(72,77,150,0.90)
-                );
-
-            box-shadow:
-                0 8px 24px
-                rgba(40,100,110,0.16);
-
-            transition:
-                transform .25s ease,
-                filter .25s ease,
-                box-shadow .25s ease;
-        }
-
-        .studio-button:hover {
-
-            transform: translateY(-2px);
-
-            filter: brightness(1.12);
-
-            box-shadow:
-                0 12px 30px
-                rgba(75,120,150,0.25);
-        }
-
-        .studio-button.secondary {
-
-            background:
-                rgba(255,255,255,0.06);
-        }
-
-        /* =================================================
-           MOBILE
-        ================================================= */
-
-        @media (max-width: 800px) {
-
-            .studio-workspace {
-
-                grid-template-columns: 1fr;
-            }
-
-            .studio-header {
-
-                align-items: flex-start;
-
-                flex-direction: column;
-            }
-
-            .studio-status {
-
-                align-self: flex-start;
-            }
-
-            .studio-panel {
-
-                padding: 18px;
-            }
-
-            .studio-textarea {
-
-                min-height: 280px;
-            }
-
-            .intro-logo-wrap {
-
-                width: min(270px, 72vw);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-
-            .intro-light,
-            .intro-core,
-            .intro-logo-wrap,
-            .intro-caption,
-            .studio-content {
-
-                animation: none !important;
-            }
-
-            .intro-logo-wrap {
-
-                opacity: 1;
-
-                transform: none;
-
-                filter: none;
-            }
-
-            .intro-caption {
-
-                opacity: 1;
-            }
-
-            .studio-content {
-
-                opacity: 1;
-
-                transform: none;
-            }
-        }
-
-    </style>
 </head>
+
 
 <body>
 
-    <div class="studio-page">
+<div class="studio-page">
 
-        <!-- =================================================
-             INTRO
-        ================================================= -->
+    <!-- =========================================
+         BACKGROUND LIGHTS
+    ========================================== -->
 
-        <section
-            class="studio-intro"
-            id="studioIntro"
-            aria-label="اردو وائس اسٹوڈیو AI"
-        >
+    <div class="studio-light light-one"></div>
+    <div class="studio-light light-two"></div>
+    <div class="studio-light light-three"></div>
 
-            <div class="intro-light"></div>
 
-            <div class="intro-core"></div>
+    <!-- =========================================
+         STUDIO INTRO
+    ========================================== -->
 
-            <div class="intro-logo-wrap">
+    <section
+        class="studio-intro"
+        id="studioIntro"
+    >
 
-                <img
-                    src="images/logo.png"
-                    alt="اردو وائس اسٹوڈیو AI"
-                    class="intro-logo"
-                >
+        <div class="intro-glow"></div>
+
+        <div class="intro-core"></div>
+
+        <div class="intro-logo-wrap">
+
+            <img
+                src="images/logo.png"
+                alt="وائس اسٹوڈیو AI"
+                class="intro-logo"
+            >
+
+        </div>
+
+        <div class="intro-caption">
+
+            <strong>
+                اردو وائس اسٹوڈیو AI
+            </strong>
+
+            <span>
+                آپ کے الفاظ، آپ کی آواز
+            </span>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         MAIN STUDIO
+    ========================================== -->
+
+    <main
+        class="studio-main"
+        id="studioMain"
+    >
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <header class="studio-header">
+
+            <div class="header-brand">
+
+                <div class="header-logo">
+
+                    <img
+                        src="images/logo.png"
+                        alt="اردو وائس اسٹوڈیو AI"
+                    >
+
+                </div>
+
+                <div class="header-title">
+
+                    <span>
+                        وائس اسٹوڈیو
+                    </span>
+
+                    <strong>
+                        اردو AI معاون
+                    </strong>
+
+                </div>
 
             </div>
 
-            <div class="intro-caption">
 
-                <strong>
-                    اردو وائس اسٹوڈیو AI
-                </strong>
+            <div class="studio-status">
+
+                <span class="status-dot"></span>
 
                 <span>
-                    آپ کے الفاظ، آپ کی آواز
+                    Studio Ready
                 </span>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================================
+             WELCOME
+        ====================================== -->
+
+        <section class="studio-welcome">
+
+            <span class="welcome-small">
+                خوش آمدید
+            </span>
+
+            <h1>
+                وائس اسٹوڈیو — اردو AI معاون
+            </h1>
+
+            <p>
+                اپنا متن لکھیں، AI سے متن تیار کروائیں،
+                بہتر کریں اور پھر اسے قدرتی آواز میں تبدیل کریں۔
+            </p>
+
+        </section>
+
+
+
+        <!-- =====================================
+             MAIN WORKSPACE
+        ====================================== -->
+
+        <section class="studio-workspace">
+
+
+            <!-- =================================
+                 TEXT AREA
+            ================================== -->
+
+            <div class="text-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <span class="panel-label">
+                            اپنا متن
+                        </span>
+
+                        <h2>
+                            متن لکھیں یا Paste کریں
+                        </h2>
+
+                    </div>
+
+
+                    <div
+                        class="word-counter"
+                        id="wordCounter"
+                    >
+                        0 الفاظ
+                    </div>
+
+                </div>
+
+
+                <textarea
+                    id="studioText"
+                    class="studio-textarea"
+                    dir="rtl"
+                    lang="ur"
+                    placeholder="اپنا اردو متن یہاں لکھیں یا Paste کریں۔۔۔"
+                    spellcheck="true"
+                ></textarea>
+
+
+                <!-- =================================
+                     QUICK ACTIONS
+                ================================== -->
+
+                <div class="quick-actions">
+
+                    <button
+                        type="button"
+                        class="quick-button"
+                        id="generateTextButton"
+                    >
+                        <span>✨</span>
+                        <span>متن تیار کریں</span>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="quick-button"
+                        id="imageButton"
+                    >
+                        <span>🖼️</span>
+                        <span>تصویر بنائیں</span>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="quick-button"
+                        id="improveTextButton"
+                    >
+                        <span>✏️</span>
+                        <span>متن بہتر کریں</span>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="quick-button primary-action"
+                        id="voiceButton"
+                    >
+                        <span>🎙️</span>
+                        <span>آواز بنائیں</span>
+                    </button>
+
+                </div>
+
+
+
+                <!-- =================================
+                     TEXT CONTROLS
+                ================================== -->
+
+                <div class="text-controls">
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="clearTextButton"
+                    >
+                        صاف کریں
+                    </button>
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="copyTextButton"
+                    >
+                        متن کاپی کریں
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================
+                 VOICE SETTINGS
+            ================================== -->
+
+            <aside class="settings-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <span class="panel-label">
+                            Voice Settings
+                        </span>
+
+                        <h2>
+                            آواز کی ترتیبات
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="setting-group">
+
+                    <label for="languageSelect">
+                        زبان
+                    </label>
+
+                    <select
+                        id="languageSelect"
+                        class="studio-select"
+                    >
+
+                        <option value="ur-PK">
+                            🇵🇰 اردو — پاکستان
+                        </option>
+
+                        <option value="en-US">
+                            🇬🇧 English
+                        </option>
+
+                        <option value="ar-SA">
+                            🇸🇦 العربية
+                        </option>
+
+                        <option value="hi-IN">
+                            🇮🇳 हिन्दी
+                        </option>
+
+                        <option value="es-ES">
+                            🇪🇸 Español
+                        </option>
+
+                        <option value="fr-FR">
+                            🇫🇷 Français
+                        </option>
+
+                        <option value="de-DE">
+                            🇩🇪 Deutsch
+                        </option>
+
+                        <option value="zh-CN">
+                            🇨🇳 中文
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="setting-group">
+
+                    <label for="voiceSelect">
+                        آواز
+                    </label>
+
+                    <select
+                        id="voiceSelect"
+                        class="studio-select"
+                    >
+
+                        <option value="default">
+                            قدرتی آواز
+                        </option>
+
+                        <option value="male">
+                            مردانہ آواز
+                        </option>
+
+                        <option value="female">
+                            زنانہ آواز
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="setting-group">
+
+                    <label for="speedSelect">
+                        رفتار
+                    </label>
+
+                    <select
+                        id="speedSelect"
+                        class="studio-select"
+                    >
+
+                        <option value="0.8">
+                            0.8 — آہستہ
+                        </option>
+
+                        <option value="1" selected>
+                            1.0 — معمول
+                        </option>
+
+                        <option value="1.15">
+                            1.15 — قدرے تیز
+                        </option>
+
+                        <option value="1.3">
+                            1.3 — تیز
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="setting-group">
+
+                    <label for="formatSelect">
+                        Audio Format
+                    </label>
+
+                    <select
+                        id="formatSelect"
+                        class="studio-select"
+                    >
+
+                        <option value="mp3">
+                            MP3
+                        </option>
+
+                        <option value="wav">
+                            WAV
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="settings-note">
+
+                    <span>💡</span>
+
+                    <p>
+                        لمبے متن کو بعد میں AI خودکار طور پر
+                        حصوں میں تقسیم کرکے آواز میں تبدیل کرے گا۔
+                    </p>
+
+                </div>
+
+            </aside>
+
+        </section>
+
+
+
+        <!-- =====================================
+             AI TOOLS
+        ====================================== -->
+
+        <section class="tools-section">
+
+            <div class="section-heading">
+
+                <span>
+                    AI Tools
+                </span>
+
+                <h2>
+                    AI معاون اوزار
+                </h2>
+
+                <p>
+                    اپنی ضرورت کے مطابق کوئی بھی سہولت منتخب کریں۔
+                </p>
+
+            </div>
+
+
+            <div class="tools-grid">
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="textTool"
+                >
+
+                    <span class="tool-icon">
+                        📝
+                    </span>
+
+                    <span class="tool-title">
+                        اردو AI معاون
+                    </span>
+
+                    <span class="tool-description">
+                        سوال، Prompt، مضمون، وعظ یا Script تیار کریں۔
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="imageTool"
+                >
+
+                    <span class="tool-icon">
+                        🖼️
+                    </span>
+
+                    <span class="tool-title">
+                        تصویر ساز
+                    </span>
+
+                    <span class="tool-description">
+                        اپنے خیال یا Prompt سے تصویر تیار کریں۔
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="improveTool"
+                >
+
+                    <span class="tool-icon">
+                        ✏️
+                    </span>
+
+                    <span class="tool-title">
+                        متن بہتر کریں
+                    </span>
+
+                    <span class="tool-description">
+                        موجودہ متن کی زبان، ترتیب اور روانی بہتر کریں۔
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="translateTool"
+                >
+
+                    <span class="tool-icon">
+                        🌐
+                    </span>
+
+                    <span class="tool-title">
+                        ترجمہ
+                    </span>
+
+                    <span class="tool-description">
+                        متن کو دوسری زبان میں منتقل کریں۔
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="lyricsTool"
+                >
+
+                    <span class="tool-icon">
+                        🎵
+                    </span>
+
+                    <span class="tool-title">
+                        Lyrics معاون
+                    </span>
+
+                    <span class="tool-description">
+                        گیت، Lyrics اور ترنم کے لیے متن تیار کریں۔
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="bibleTool"
+                >
+
+                    <span class="tool-icon">
+                        📖
+                    </span>
+
+                    <span class="tool-title">
+                        Bible Study معاون
+                    </span>
+
+                    <span class="tool-description">
+                        بائبل مطالعہ، نکات اور تحقیق کے لیے مدد حاصل کریں۔
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="scriptTool"
+                >
+
+                    <span class="tool-icon">
+                        🎬
+                    </span>
+
+                    <span class="tool-title">
+                        Video Script معاون
+                    </span>
+
+                    <span class="tool-description">
+                        YouTube اور ویڈیو کے لیے Script تیار کریں۔
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    type="button"
+                    class="tool-card"
+                    id="voiceTool"
+                >
+
+                    <span class="tool-icon">
+                        🎙️
+                    </span>
+
+                    <span class="tool-title">
+                        AI Voice
+                    </span>
+
+                    <span class="tool-description">
+                        تیار شدہ متن کو قدرتی آواز میں تبدیل کریں۔
+                    </span>
+
+                </button>
 
             </div>
 
         </section>
 
 
-        <!-- =================================================
-             MAIN STUDIO
-        ================================================= -->
 
-        <main class="studio-content">
+        <!-- =====================================
+             AI RESPONSE AREA
+        ====================================== -->
 
-            <header class="studio-header">
+        <section
+            class="ai-response-section"
+            id="aiResponseSection"
+        >
 
-                <div class="studio-brand">
+            <div class="section-heading">
 
-                    <img
-                        src="images/logo.png"
-                        alt="اردو وائس اسٹوڈیو AI"
-                        class="studio-brand-logo"
+                <span>
+                    AI Response
+                </span>
+
+                <h2>
+                    تیار کردہ متن
+                </h2>
+
+            </div>
+
+
+            <div
+                class="ai-response-box"
+                id="aiResponseBox"
+            >
+
+                <div
+                    class="response-empty"
+                    id="responseEmpty"
+                >
+
+                    <span>
+                        ✨
+                    </span>
+
+                    <p>
+                        AI سے متن تیار ہونے کے بعد
+                        یہاں نظر آئے گا۔
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="response-content"
+                    id="responseContent"
+                    hidden
+                ></div>
+
+            </div>
+
+
+            <div class="response-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="copyResponseButton"
+                >
+                    📋 کاپی کریں
+                </button>
+
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="useResponseButton"
+                >
+                    🎙️ Voice Studio میں استعمال کریں
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             AUDIO PLAYER
+        ====================================== -->
+
+        <section class="audio-section">
+
+            <div class="section-heading">
+
+                <span>
+                    Audio Studio
+                </span>
+
+                <h2>
+                    آپ کی آواز
+                </h2>
+
+            </div>
+
+
+            <div class="audio-player-card">
+
+                <div class="audio-status">
+
+                    <span
+                        class="audio-status-dot"
+                        id="audioStatusDot"
+                    ></span>
+
+                    <span id="audioStatus">
+                        ابھی کوئی Audio تیار نہیں ہوئی۔
+                    </span>
+
+                </div>
+
+
+                <audio
+                    id="studioAudio"
+                    controls
+                    preload="metadata"
+                ></audio>
+
+
+                <div class="audio-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="playAudioButton"
                     >
+                        ▶️ Play
+                    </button>
 
-                    <div>
 
-                        <h1>
-                            اردو وائس اسٹوڈیو AI
-                        </h1>
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="pauseAudioButton"
+                    >
+                        ⏸️ Pause
+                    </button>
 
-                        <p>
-                            اپنے الفاظ کو قدرتی اور واضح آواز دیں۔
-                        </p>
 
-                    </div>
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="stopAudioButton"
+                    >
+                        ⏹️ Stop
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="downloadAudioButton"
+                    >
+                        ⬇️ Download
+                    </button>
 
                 </div>
 
-                <div class="studio-status">
-                    Studio Ready
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             CONTACT
+        ====================================== -->
+
+        <section class="contact-section">
+
+            <div class="contact-card">
+
+                <div class="contact-icon">
+                    💬
                 </div>
 
-            </header>
-
-
-            <section class="studio-workspace">
-
-
-                <!-- =================================================
-                     TEXT PANEL
-                ================================================= -->
-
-                <div class="studio-panel">
+                <div class="contact-content">
 
                     <h2>
-                        اپنا متن یہاں لکھیں
+                        مدد یا رابطہ
                     </h2>
 
-                    <p class="studio-panel-description">
-                        اپنا اردو متن، مضمون، وعظ یا طویل تحریر یہاں شامل کریں۔
+                    <p>
+                        اگر آپ کو Voice Studio استعمال کرنے میں
+                        مدد چاہیے تو ہم سے رابطہ کریں۔
                     </p>
-
-                    <textarea
-                        id="studioText"
-                        class="studio-textarea"
-                        placeholder="اپنا اردو متن یہاں لکھیں یا Paste کریں..."
-                    ></textarea>
-
-                    <div class="studio-actions">
-
-                        <button
-                            type="button"
-                            class="studio-button"
-                            id="generateButton"
-                        >
-                            آواز بنائیں
-                        </button>
-
-                        <button
-                            type="button"
-                            class="studio-button secondary"
-                            id="clearButton"
-                        >
-                            صاف کریں
-                        </button>
-
-                    </div>
 
                 </div>
 
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="contactButton"
+                >
+                    رابطہ کریں
+                </button>
 
-                <!-- =================================================
-                     SETTINGS PANEL
-                ================================================= -->
+            </div>
 
-                <aside class="studio-panel">
-
-                    <h2>
-                        آواز کی ترتیبات
-                    </h2>
-
-                    <p class="studio-panel-description">
-                        اپنی پسند کی زبان، آواز اور رفتار منتخب کریں۔
-                    </p>
+        </section>
 
 
-                    <div class="studio-controls">
 
-                        <div class="studio-control">
+        <!-- =====================================
+             FOOTER
+        ====================================== -->
 
-                            <label for="studioLanguage">
-                                زبان
-                            </label>
+        <footer class="studio-footer">
 
-                            <select
-                                id="studioLanguage"
-                                class="studio-select"
-                            >
+            <span>
+                اردو وائس اسٹوڈیو AI
+            </span>
 
-                                <option value="ur-PK">
-                                    🇵🇰 اردو — پاکستانی
-                                </option>
+            <span>
+                آپ کے الفاظ، آپ کی آواز
+            </span>
 
-                                <option value="en-US">
-                                    🇺🇸 English
-                                </option>
-
-                                <option value="ar-SA">
-                                    🇸🇦 العربية
-                                </option>
-
-                                <option value="hi-IN">
-                                    🇮🇳 हिन्दी
-                                </option>
-
-                                <option value="es-ES">
-                                    🇪🇸 Español
-                                </option>
-
-                                <option value="fr-FR">
-                                    🇫🇷 Français
-                                </option>
-
-                                <option value="de-DE">
-                                    🇩🇪 Deutsch
-                                </option>
-
-                                <option value="zh-CN">
-                                    🇨🇳 中文
-                                </option>
-
-                            </select>
-
-                        </div>
+        </footer>
 
 
-                        <div class="studio-control">
+    </main>
 
-                            <label for="studioVoice">
-                                آواز
-                            </label>
-
-                            <select
-                                id="studioVoice"
-                                class="studio-select"
-                            >
-
-                                <option value="default">
-                                    قدرتی آواز
-                                </option>
-
-                                <option value="male">
-                                    مردانہ آواز
-                                </option>
-
-                                <option value="female">
-                                    زنانہ آواز
-                                </option>
-
-                            </select>
-
-                        </div>
+</div>
 
 
-                        <div class="studio-control">
 
-                            <label for="studioSpeed">
-                                رفتار
-                            </label>
+<!-- =========================================
+     JAVASCRIPT
+========================================== -->
 
-                            <select
-                                id="studioSpeed"
-                                class="studio-select"
-                            >
-
-                                <option value="0.8">
-                                    آہستہ
-                                </option>
-
-                                <option value="1" selected>
-                                    عام رفتار
-                                </option>
-
-                                <option value="1.15">
-                                    تیز
-                                </option>
-
-                                <option value="1.3">
-                                    بہت تیز
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                </aside>
-
-            </section>
-
-        </main>
-
-    </div>
+<script src="settings.js"></script>
+<script src="audio.js"></script>
+<script src="studio.js"></script>
 
 
-    <script>
+<script>
 
-        /* =================================================
-           STUDIO INTRO CONTROLLER
-        ================================================= */
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
-
-                const intro =
-                    document.getElementById(
-                        "studioIntro"
-                    );
-
-                if (!intro) return;
+"use strict";
 
 
-                /*
-                    Intro تقریباً 7 سیکنڈ کے بعد
-                    خود بخود ختم ہو جائے گا۔
-                */
+/* =========================================
+   ELEMENTS
+========================================= */
 
-                window.setTimeout(
-                    function () {
+const studioText =
+    document.getElementById("studioText");
 
-                        intro.classList.add(
-                            "hide"
-                        );
+const wordCounter =
+    document.getElementById("wordCounter");
 
-                    },
-                    7000
+const clearTextButton =
+    document.getElementById("clearTextButton");
+
+const copyTextButton =
+    document.getElementById("copyTextButton");
+
+const generateTextButton =
+    document.getElementById("generateTextButton");
+
+const imageButton =
+    document.getElementById("imageButton");
+
+const improveTextButton =
+    document.getElementById("improveTextButton");
+
+const voiceButton =
+    document.getElementById("voiceButton");
+
+const textTool =
+    document.getElementById("textTool");
+
+const imageTool =
+    document.getElementById("imageTool");
+
+const improveTool =
+    document.getElementById("improveTool");
+
+const translateTool =
+    document.getElementById("translateTool");
+
+const lyricsTool =
+    document.getElementById("lyricsTool");
+
+const bibleTool =
+    document.getElementById("bibleTool");
+
+const scriptTool =
+    document.getElementById("scriptTool");
+
+const voiceTool =
+    document.getElementById("voiceTool");
+
+const copyResponseButton =
+    document.getElementById("copyResponseButton");
+
+const useResponseButton =
+    document.getElementById("useResponseButton");
+
+const aiResponseBox =
+    document.getElementById("aiResponseBox");
+
+const responseEmpty =
+    document.getElementById("responseEmpty");
+
+const responseContent =
+    document.getElementById("responseContent");
+
+const studioAudio =
+    document.getElementById("studioAudio");
+
+const playAudioButton =
+    document.getElementById("playAudioButton");
+
+const pauseAudioButton =
+    document.getElementById("pauseAudioButton");
+
+const stopAudioButton =
+    document.getElementById("stopAudioButton");
+
+const downloadAudioButton =
+    document.getElementById("downloadAudioButton");
+
+const audioStatus =
+    document.getElementById("audioStatus");
+
+const contactButton =
+    document.getElementById("contactButton");
+
+
+/* =========================================
+   WORD COUNTER
+========================================= */
+
+function updateWordCounter() {
+
+    if (!studioText || !wordCounter) {
+        return;
+    }
+
+    const text =
+        studioText.value.trim();
+
+    if (!text) {
+
+        wordCounter.textContent =
+            "0 الفاظ";
+
+        return;
+    }
+
+    const words =
+        text.split(/\s+/).filter(Boolean);
+
+    wordCounter.textContent =
+        words.length + " الفاظ";
+}
+
+
+if (studioText) {
+
+    studioText.addEventListener(
+        "input",
+        updateWordCounter
+    );
+
+}
+
+
+/* =========================================
+   CLEAR TEXT
+========================================= */
+
+if (clearTextButton) {
+
+    clearTextButton.addEventListener(
+        "click",
+        function () {
+
+            studioText.value = "";
+
+            updateWordCounter();
+
+            studioText.focus();
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   COPY TEXT
+========================================= */
+
+if (copyTextButton) {
+
+    copyTextButton.addEventListener(
+        "click",
+        async function () {
+
+            const text =
+                studioText.value.trim();
+
+            if (!text) {
+
+                alert(
+                    "براہ کرم پہلے متن لکھیں یا Paste کریں۔"
+                );
+
+                return;
+            }
+
+            try {
+
+                await navigator.clipboard.writeText(text);
+
+                alert(
+                    "متن کاپی ہوگیا۔"
+                );
+
+            } catch (error) {
+
+                alert(
+                    "متن کاپی نہیں ہوسکا۔"
                 );
 
             }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   AI PLACEHOLDER
+========================================= */
+
+function showComingSoon(message) {
+
+    alert(
+        message +
+        "\n\nیہ AI سروس اگلے مرحلے میں اصل AI نظام کے ساتھ منسلک کی جائے گی۔"
+    );
+
+}
+
+
+/* =========================================
+   GENERATE TEXT
+========================================= */
+
+if (generateTextButton) {
+
+    generateTextButton.addEventListener(
+        "click",
+        function () {
+
+            showComingSoon(
+                "اردو AI معاون"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   IMAGE
+========================================= */
+
+if (imageButton) {
+
+    imageButton.addEventListener(
+        "click",
+        function () {
+
+            showComingSoon(
+                "تصویر ساز"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   IMPROVE TEXT
+========================================= */
+
+if (improveTextButton) {
+
+    improveTextButton.addEventListener(
+        "click",
+        function () {
+
+            showComingSoon(
+                "متن بہتر کریں"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   VOICE
+========================================= */
+
+if (voiceButton) {
+
+    voiceButton.addEventListener(
+        "click",
+        function () {
+
+            showComingSoon(
+                "AI Voice"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   TOOL CARDS
+========================================= */
+
+function connectTool(
+    element,
+    message
+) {
+
+    if (!element) {
+        return;
+    }
+
+    element.addEventListener(
+        "click",
+        function () {
+
+            showComingSoon(message);
+
+        }
+    );
+
+}
+
+
+connectTool(
+    textTool,
+    "اردو AI معاون"
+);
+
+connectTool(
+    imageTool,
+    "تصویر ساز"
+);
+
+connectTool(
+    improveTool,
+    "متن بہتر کریں"
+);
+
+connectTool(
+    translateTool,
+    "ترجمہ"
+);
+
+connectTool(
+    lyricsTool,
+    "Lyrics معاون"
+);
+
+connectTool(
+    bibleTool,
+    "Bible Study معاون"
+);
+
+connectTool(
+    scriptTool,
+    "Video Script معاون"
+);
+
+connectTool(
+    voiceTool,
+    "AI Voice"
+);
+
+
+/* =========================================
+   AI RESPONSE
+========================================= */
+
+function showResponse(text) {
+
+    if (!responseContent || !responseEmpty) {
+        return;
+    }
+
+    responseContent.textContent =
+        text;
+
+    responseEmpty.hidden =
+        true;
+
+    responseContent.hidden =
+        false;
+}
+
+
+if (copyResponseButton) {
+
+    copyResponseButton.addEventListener(
+        "click",
+        async function () {
+
+            const text =
+                responseContent.textContent.trim();
+
+            if (!text) {
+
+                alert(
+                    "ابھی کوئی AI متن موجود نہیں۔"
+                );
+
+                return;
+            }
+
+            try {
+
+                await navigator.clipboard.writeText(text);
+
+                alert(
+                    "AI متن کاپی ہوگیا۔"
+                );
+
+            } catch (error) {
+
+                alert(
+                    "متن کاپی نہیں ہوسکا۔"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   USE RESPONSE IN VOICE STUDIO
+========================================= */
+
+if (useResponseButton) {
+
+    useResponseButton.addEventListener(
+        "click",
+        function () {
+
+            const text =
+                responseContent.textContent.trim();
+
+            if (!text) {
+
+                alert(
+                    "ابھی استعمال کرنے کے لیے کوئی AI متن موجود نہیں۔"
+                );
+
+                return;
+            }
+
+            studioText.value =
+                text;
+
+            updateWordCounter();
+
+            studioText.focus();
+
+            studioText.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   AUDIO CONTROLS
+========================================= */
+
+if (playAudioButton) {
+
+    playAudioButton.addEventListener(
+        "click",
+        function () {
+
+            if (!studioAudio.src) {
+
+                alert(
+                    "ابھی کوئی Audio تیار نہیں ہوئی۔"
+                );
+
+                return;
+            }
+
+            studioAudio.play();
+
+        }
+    );
+
+}
+
+
+if (pauseAudioButton) {
+
+    pauseAudioButton.addEventListener(
+        "click",
+        function () {
+
+            studioAudio.pause();
+
+        }
+    );
+
+}
+
+
+if (stopAudioButton) {
+
+    stopAudioButton.addEventListener(
+        "click",
+        function () {
+
+            studioAudio.pause();
+
+            studioAudio.currentTime = 0;
+
+        }
+    );
+
+}
+
+
+if (downloadAudioButton) {
+
+    downloadAudioButton.addEventListener(
+        "click",
+        function () {
+
+            if (!studioAudio.src) {
+
+                alert(
+                    "ابھی Download کے لیے کوئی Audio موجود نہیں۔"
+                );
+
+                return;
+            }
+
+            const link =
+                document.createElement("a");
+
+            link.href =
+                studioAudio.src;
+
+            link.download =
+                "urdu-voice-studio.mp3";
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   CONTACT
+========================================= */
+
+if (contactButton) {
+
+    contactButton.addEventListener(
+        "click",
+        function () {
+
+            alert(
+                "رابطہ کا مکمل نظام اگلے مرحلے میں شامل کیا جائے گا۔"
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   INTRO
+========================================= */
+
+window.addEventListener(
+    "load",
+    function () {
+
+        const intro =
+            document.getElementById(
+                "studioIntro"
+            );
+
+        if (!intro) {
+            return;
+        }
+
+        setTimeout(
+            function () {
+
+                intro.classList.add(
+                    "intro-hidden"
+                );
+
+            },
+            7000
         );
 
-
-        /* =================================================
-           CLEAR TEXT
-        ================================================= */
-
-        const clearButton =
-            document.getElementById(
-                "clearButton"
-            );
-
-        const studioText =
-            document.getElementById(
-                "studioText"
-            );
+    }
+);
 
 
-        if (clearButton && studioText) {
+/* =========================================
+   INITIAL
+========================================= */
 
-            clearButton.addEventListener(
-                "click",
-                function () {
-
-                    studioText.value = "";
-
-                    studioText.focus();
-
-                }
-            );
-
-        }
+updateWordCounter();
 
 
-        /* =================================================
-           GENERATE PLACEHOLDER
-        ================================================= */
-
-        const generateButton =
-            document.getElementById(
-                "generateButton"
-            );
-
-
-        if (generateButton) {
-
-            generateButton.addEventListener(
-                "click",
-                function () {
-
-                    if (
-                        !studioText ||
-                        !studioText.value.trim()
-                    ) {
-
-                        alert(
-                            "براہِ کرم پہلے اپنا متن لکھیں۔"
-                        );
-
-                        return;
-                    }
-
-
-                    alert(
-                        "AI آواز بنانے والا نظام اگلے مرحلے میں شامل کیا جائے گا۔"
-                    );
-
-                }
-            );
-
-        }
-
-    </script>
+</script>
 
 </body>
+
 </html>
