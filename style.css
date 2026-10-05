@@ -1,1 +1,914 @@
+/* =========================================================
+   URDU VOICE STUDIO
+   Main Stylesheet
+   ========================================================= */
 
+:root {
+    --ink: #101827;
+    --ink-soft: #172238;
+    --mist: #eef4f5;
+    --white: #ffffff;
+
+    --teal: #19b6a5;
+    --indigo: #5967e8;
+    --coral: #f47b68;
+    --champagne: #f5d98b;
+
+    --text-dark: #162033;
+    --text-soft: #697386;
+
+    --border-light: rgba(255, 255, 255, 0.28);
+    --shadow: 0 30px 80px rgba(5, 15, 30, 0.28);
+
+    --radius-large: 30px;
+    --radius-medium: 18px;
+    --radius-small: 12px;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    font-family:
+        "Noto Nastaliq Urdu",
+        "Noto Naskh Arabic",
+        "Segoe UI",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    background: var(--ink);
+    color: var(--text-dark);
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+
+/* =========================================================
+   PAGE BACKGROUND
+   ========================================================= */
+
+.page {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+    padding: 40px 20px;
+
+    background:
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(25, 182, 165, 0.28),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 88% 15%,
+            rgba(89, 103, 232, 0.30),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 82% 86%,
+            rgba(244, 123, 104, 0.24),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 18% 88%,
+            rgba(245, 217, 139, 0.18),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #0d1524 0%,
+            #121c30 48%,
+            #0e1728 100%
+        );
+
+    transition:
+        background 0.7s ease;
+}
+
+
+/* =========================================================
+   FLOATING COLOR LIGHTS
+   ========================================================= */
+
+.light {
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    filter: blur(80px);
+    opacity: 0.22;
+
+    pointer-events: none;
+
+    transition:
+        transform 1.2s ease,
+        opacity 0.8s ease;
+}
+
+.light.one {
+    top: -180px;
+    left: -130px;
+
+    background: var(--teal);
+}
+
+.light.two {
+    top: -160px;
+    right: -130px;
+
+    background: var(--indigo);
+}
+
+.light.three {
+    bottom: -190px;
+    right: 12%;
+
+    background: var(--coral);
+}
+
+.light.four {
+    bottom: -180px;
+    left: 8%;
+
+    background: var(--champagne);
+}
+
+
+/* Smooth movement when the main page is hovered */
+
+.page:hover .light.one {
+    transform: translate(35px, 25px) scale(1.08);
+    opacity: 0.27;
+}
+
+.page:hover .light.two {
+    transform: translate(-30px, 20px) scale(1.06);
+    opacity: 0.26;
+}
+
+.page:hover .light.three {
+    transform: translate(-20px, -25px) scale(1.08);
+    opacity: 0.26;
+}
+
+.page:hover .light.four {
+    transform: translate(25px, -20px) scale(1.08);
+    opacity: 0.22;
+}
+
+
+/* =========================================================
+   MAIN AUTH CARD
+   ========================================================= */
+
+.auth-card {
+    position: relative;
+    z-index: 5;
+
+    width: min(1100px, 100%);
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-large);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.13),
+            rgba(255, 255, 255, 0.055)
+        );
+
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+
+    box-shadow: var(--shadow);
+
+    transition:
+        transform 0.5s ease,
+        box-shadow 0.5s ease;
+}
+
+.auth-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 38px 100px rgba(5, 15, 30, 0.34),
+        0 0 70px rgba(25, 182, 165, 0.07);
+}
+
+
+/* =========================================================
+   LEFT BRAND SIDE
+   ========================================================= */
+
+.brand-side {
+    position: relative;
+
+    min-height: 620px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 65px;
+
+    color: var(--white);
+
+    background:
+        radial-gradient(
+            circle at 25% 25%,
+            rgba(25, 182, 165, 0.25),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 80% 75%,
+            rgba(244, 123, 104, 0.18),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(25, 182, 165, 0.12),
+            rgba(89, 103, 232, 0.12),
+            rgba(244, 123, 104, 0.08)
+        );
+
+    overflow: hidden;
+}
+
+
+/* Decorative light inside brand panel */
+
+.brand-side::before {
+    content: "";
+
+    position: absolute;
+
+    width: 280px;
+    height: 280px;
+
+    top: -130px;
+    right: -100px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(245, 217, 139, 0.30),
+            transparent 68%
+        );
+
+    filter: blur(15px);
+
+    transition:
+        transform 0.9s ease;
+}
+
+.brand-side:hover::before {
+    transform: translate(-35px, 35px) scale(1.15);
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.logo-mark {
+    position: relative;
+    z-index: 2;
+
+    width: 74px;
+    height: 74px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 28px;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(25, 182, 165, 0.45),
+            rgba(89, 103, 232, 0.38),
+            rgba(244, 123, 104, 0.32)
+        );
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+
+    transition:
+        transform 0.4s ease,
+        box-shadow 0.4s ease;
+}
+
+.logo-mark:hover {
+    transform: translateY(-5px) rotate(-2deg);
+
+    box-shadow:
+        0 22px 45px rgba(0, 0, 0, 0.24),
+        0 0 35px rgba(25, 182, 165, 0.18);
+}
+
+
+/* =========================================================
+   BRAND TEXT
+   ========================================================= */
+
+.brand-side h1 {
+    position: relative;
+    z-index: 2;
+
+    margin-bottom: 18px;
+
+    font-family:
+        "Noto Nastaliq Urdu",
+        "Noto Naskh Arabic",
+        serif;
+
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 1.35;
+
+    font-weight: 700;
+
+    background:
+        linear-gradient(
+            100deg,
+            #ffffff 5%,
+            #d7fffa 35%,
+            #f5d98b 70%,
+            #ffffff 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    transition:
+        transform 0.4s ease;
+}
+
+.brand-side:hover h1 {
+    transform: translateX(-4px);
+}
+
+
+.brand-side .tagline {
+    position: relative;
+    z-index: 2;
+
+    max-width: 440px;
+
+    margin-bottom: 32px;
+
+    color: rgba(255, 255, 255, 0.82);
+
+    font-size: 19px;
+    line-height: 2;
+
+    transition:
+        color 0.4s ease;
+}
+
+.brand-side:hover .tagline {
+    color: rgba(255, 255, 255, 0.94);
+}
+
+
+/* =========================================================
+   SMALL BRAND LABEL
+   ========================================================= */
+
+.brand-label {
+    position: relative;
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+
+    width: fit-content;
+
+    padding: 8px 14px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid rgba(255, 255, 255, 0.17);
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(25, 182, 165, 0.13),
+            rgba(89, 103, 232, 0.13),
+            rgba(244, 123, 104, 0.10)
+        );
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1.7px;
+
+    transition:
+        border-color 0.4s ease,
+        background 0.4s ease,
+        color 0.4s ease;
+}
+
+.brand-side:hover .brand-label {
+    color: #ffffff;
+
+    border-color: rgba(255, 255, 255, 0.30);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(25, 182, 165, 0.20),
+            rgba(89, 103, 232, 0.18),
+            rgba(244, 123, 104, 0.15)
+        );
+}
+
+
+/* =========================================================
+   FORM SIDE
+   ========================================================= */
+
+.form-side {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 55px 60px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.96),
+            rgba(238, 244, 245, 0.91)
+        );
+}
+
+
+/* =========================================================
+   FORM HEADER
+   ========================================================= */
+
+.form-side h2 {
+    margin-bottom: 10px;
+
+    color: var(--text-dark);
+
+    font-size: 30px;
+    line-height: 1.5;
+    font-weight: 800;
+}
+
+.form-side .form-intro {
+    margin-bottom: 28px;
+
+    color: var(--text-soft);
+
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+
+/* =========================================================
+   GOOGLE BUTTON
+   ========================================================= */
+
+.google-button {
+    width: 100%;
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    margin-bottom: 22px;
+
+    border: 1px solid rgba(22, 32, 51, 0.12);
+    border-radius: var(--radius-small);
+
+    background: rgba(255, 255, 255, 0.85);
+
+    color: var(--text-dark);
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease,
+        background 0.3s ease;
+}
+
+.google-button:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(25, 182, 165, 0.35);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(25, 182, 165, 0.07),
+            rgba(89, 103, 232, 0.07),
+            rgba(244, 123, 104, 0.06)
+        );
+
+    box-shadow:
+        0 12px 25px rgba(16, 24, 39, 0.10);
+}
+
+.google-button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin: 8px 0 22px;
+
+    color: #8a93a3;
+
+    font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(22, 32, 51, 0.14),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--text-dark);
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.form-group input {
+    width: 100%;
+    height: 52px;
+
+    padding: 0 16px;
+
+    border: 1px solid rgba(22, 32, 51, 0.13);
+    border-radius: var(--radius-small);
+
+    outline: none;
+
+    background: rgba(255, 255, 255, 0.84);
+
+    color: var(--text-dark);
+
+    font-family: inherit;
+    font-size: 15px;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.form-group input:hover {
+    background: #ffffff;
+
+    border-color: rgba(25, 182, 165, 0.30);
+}
+
+.form-group input:focus {
+    background: #ffffff;
+
+    border-color: var(--teal);
+
+    box-shadow:
+        0 0 0 4px rgba(25, 182, 165, 0.10);
+
+    transform: translateY(-1px);
+}
+
+.form-group input::placeholder {
+    color: #9aa3b1;
+}
+
+
+/* =========================================================
+   MAIN SIGNUP BUTTON
+   ========================================================= */
+
+.signup-button {
+    position: relative;
+
+    width: 100%;
+    min-height: 54px;
+
+    margin-top: 7px;
+
+    border: 0;
+    border-radius: var(--radius-small);
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            100deg,
+            var(--teal) 0%,
+            #398fd4 38%,
+            var(--indigo) 66%,
+            var(--coral) 100%
+        );
+
+    background-size: 220% 100%;
+
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 13px 30px rgba(50, 100, 190, 0.22);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        background-position 0.7s ease;
+}
+
+.signup-button:hover {
+    transform: translateY(-3px);
+
+    background-position: 100% 50%;
+
+    box-shadow:
+        0 18px 38px rgba(50, 100, 190, 0.28),
+        0 0 30px rgba(25, 182, 165, 0.12);
+}
+
+.signup-button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   LOGIN LINK
+   ========================================================= */
+
+.login-row {
+    margin-top: 22px;
+
+    text-align: center;
+
+    color: var(--text-soft);
+
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.login-row a {
+    color: var(--indigo);
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition:
+        color 0.3s ease;
+}
+
+.login-row a:hover {
+    color: var(--teal);
+}
+
+
+/* =========================================================
+   SECURITY NOTE
+   ========================================================= */
+
+.security-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+
+    margin-top: 24px;
+    padding-top: 18px;
+
+    border-top: 1px solid rgba(22, 32, 51, 0.08);
+
+    color: #8a93a3;
+
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.security-note span {
+    flex: 1;
+}
+
+
+/* =========================================================
+   BUTTON FOCUS
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 3px solid rgba(25, 182, 165, 0.28);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .page {
+        padding: 24px 16px;
+    }
+
+    .auth-card {
+        grid-template-columns: 1fr;
+
+        max-width: 620px;
+    }
+
+    .brand-side {
+        min-height: auto;
+
+        padding: 45px 38px;
+    }
+
+    .form-side {
+        padding: 42px 38px;
+    }
+
+    .brand-side h1 {
+        font-size: 43px;
+    }
+
+    .brand-side .tagline {
+        font-size: 17px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .page {
+        padding: 12px;
+    }
+
+    .auth-card {
+        border-radius: 23px;
+    }
+
+    .brand-side {
+        padding: 34px 25px;
+    }
+
+    .form-side {
+        padding: 34px 25px;
+    }
+
+    .logo-mark {
+        width: 64px;
+        height: 64px;
+
+        margin-bottom: 22px;
+
+        border-radius: 19px;
+    }
+
+    .brand-side h1 {
+        font-size: 36px;
+    }
+
+    .brand-side .tagline {
+        font-size: 16px;
+        line-height: 1.9;
+    }
+
+    .form-side h2 {
+        font-size: 26px;
+    }
+
+    .light {
+        width: 280px;
+        height: 280px;
+
+        filter: blur(65px);
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
