@@ -1,11 +1,17 @@
 /* =========================================================
-   URDU VOICE STUDIO
+   URDU VOICE STUDIO AI
    Main Stylesheet
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT VARIABLES
    ========================================================= */
 
 :root {
     --ink: #101827;
     --ink-soft: #172238;
+
     --mist: #eef4f5;
     --white: #ffffff;
 
@@ -18,7 +24,9 @@
     --text-soft: #697386;
 
     --border-light: rgba(255, 255, 255, 0.28);
-    --shadow: 0 30px 80px rgba(5, 15, 30, 0.28);
+
+    --shadow:
+        0 30px 80px rgba(5, 15, 30, 0.28);
 
     --radius-large: 30px;
     --radius-medium: 18px;
@@ -42,6 +50,7 @@ html {
 
 body {
     min-height: 100vh;
+
     font-family:
         "Noto Nastaliq Urdu",
         "Noto Naskh Arabic",
@@ -59,11 +68,12 @@ body {
 
 
 /* =========================================================
-   PAGE BACKGROUND
+   PAGE
    ========================================================= */
 
 .page {
     position: relative;
+
     min-height: 100vh;
     width: 100%;
 
@@ -72,6 +82,7 @@ body {
     justify-content: center;
 
     overflow: hidden;
+
     padding: 40px 20px;
 
     background:
@@ -120,6 +131,7 @@ body {
     border-radius: 50%;
 
     filter: blur(80px);
+
     opacity: 0.22;
 
     pointer-events: none;
@@ -158,25 +170,39 @@ body {
 }
 
 
-/* Smooth movement when the main page is hovered */
+/* =========================================================
+   LIGHT HOVER MOVEMENT
+   ========================================================= */
 
 .page:hover .light.one {
-    transform: translate(35px, 25px) scale(1.08);
+    transform:
+        translate(35px, 25px)
+        scale(1.08);
+
     opacity: 0.27;
 }
 
 .page:hover .light.two {
-    transform: translate(-30px, 20px) scale(1.06);
+    transform:
+        translate(-30px, 20px)
+        scale(1.06);
+
     opacity: 0.26;
 }
 
 .page:hover .light.three {
-    transform: translate(-20px, -25px) scale(1.08);
+    transform:
+        translate(-20px, -25px)
+        scale(1.08);
+
     opacity: 0.26;
 }
 
 .page:hover .light.four {
-    transform: translate(25px, -20px) scale(1.08);
+    transform:
+        translate(25px, -20px)
+        scale(1.08);
+
     opacity: 0.22;
 }
 
@@ -192,12 +218,19 @@ body {
     width: min(1100px, 100%);
 
     display: grid;
-    grid-template-columns: 1fr 1fr;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
 
     overflow: hidden;
 
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-large);
+    border:
+        1px solid
+        var(--border-light);
+
+    border-radius:
+        var(--radius-large);
 
     background:
         linear-gradient(
@@ -206,10 +239,14 @@ body {
             rgba(255, 255, 255, 0.055)
         );
 
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter:
+        blur(24px);
 
-    box-shadow: var(--shadow);
+    -webkit-backdrop-filter:
+        blur(24px);
+
+    box-shadow:
+        var(--shadow);
 
     transition:
         transform 0.5s ease,
@@ -217,7 +254,8 @@ body {
 }
 
 .auth-card:hover {
-    transform: translateY(-4px);
+    transform:
+        translateY(-4px);
 
     box-shadow:
         0 38px 100px rgba(5, 15, 30, 0.34),
@@ -226,7 +264,7 @@ body {
 
 
 /* =========================================================
-   LEFT BRAND SIDE
+   BRAND SIDE
    ========================================================= */
 
 .brand-side {
@@ -264,7 +302,9 @@ body {
 }
 
 
-/* Decorative light inside brand panel */
+/* =========================================================
+   BRAND DECORATIVE LIGHT
+   ========================================================= */
 
 .brand-side::before {
     content: "";
@@ -293,63 +333,158 @@ body {
 }
 
 .brand-side:hover::before {
-    transform: translate(-35px, 35px) scale(1.15);
+    transform:
+        translate(-35px, 35px)
+        scale(1.15);
 }
 
 
 /* =========================================================
-   LOGO
+   LOGO WRAPPER
    ========================================================= */
 
-.logo-mark {
+.logo-wrap {
     position: relative;
-    z-index: 2;
+    z-index: 3;
 
-    width: 74px;
-    height: 74px;
+    width: 150px;
+    height: 150px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    margin-bottom: 28px;
+    margin-bottom: 30px;
 
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 22px;
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
+
+    border-radius: 28px;
 
     background:
         linear-gradient(
             135deg,
-            rgba(25, 182, 165, 0.45),
-            rgba(89, 103, 232, 0.38),
-            rgba(244, 123, 104, 0.32)
+            rgba(25, 182, 165, 0.16),
+            rgba(89, 103, 232, 0.14),
+            rgba(244, 123, 104, 0.12)
         );
 
     box-shadow:
-        0 15px 40px rgba(0, 0, 0, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+        0 18px 45px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
 
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: 1px;
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
 
     transition:
-        transform 0.4s ease,
-        box-shadow 0.4s ease;
-}
-
-.logo-mark:hover {
-    transform: translateY(-5px) rotate(-2deg);
-
-    box-shadow:
-        0 22px 45px rgba(0, 0, 0, 0.24),
-        0 0 35px rgba(25, 182, 165, 0.18);
+        transform 0.45s ease,
+        box-shadow 0.45s ease,
+        border-color 0.45s ease;
 }
 
 
 /* =========================================================
-   BRAND TEXT
+   LOGO IMAGE
+   ========================================================= */
+
+.brand-logo {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    max-width: 125px;
+    max-height: 125px;
+
+    object-fit: contain;
+
+    border-radius: 20px;
+
+    filter:
+        drop-shadow(
+            0 10px 18px
+            rgba(0, 0, 0, 0.18)
+        );
+
+    transition:
+        transform 0.45s ease,
+        filter 0.45s ease;
+}
+
+
+/* =========================================================
+   LOGO HOVER
+   ========================================================= */
+
+.logo-wrap:hover {
+    transform:
+        translateY(-6px)
+        rotate(-1.5deg)
+        scale(1.02);
+
+    border-color:
+        rgba(255, 255, 255, 0.34);
+
+    box-shadow:
+        0 25px 55px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(25, 182, 165, 0.16),
+        0 0 70px rgba(89, 103, 232, 0.08);
+}
+
+.logo-wrap:hover .brand-logo {
+    transform:
+        scale(1.04);
+
+    filter:
+        drop-shadow(
+            0 13px 24px
+            rgba(0, 0, 0, 0.22)
+        );
+}
+
+
+/* =========================================================
+   BRAND CONTENT
+   ========================================================= */
+
+.brand-content {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   SMALL ENGLISH BRAND NAME
+   ========================================================= */
+
+.brand-small {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color:
+        rgba(255, 255, 255, 0.68);
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   MAIN BRAND HEADING
    ========================================================= */
 
 .brand-side h1 {
@@ -363,7 +498,9 @@ body {
         "Noto Naskh Arabic",
         serif;
 
-    font-size: clamp(38px, 5vw, 58px);
+    font-size:
+        clamp(38px, 5vw, 58px);
+
     line-height: 1.35;
 
     font-weight: 700;
@@ -379,6 +516,7 @@ body {
 
     -webkit-background-clip: text;
     background-clip: text;
+
     color: transparent;
 
     transition:
@@ -386,11 +524,16 @@ body {
 }
 
 .brand-side:hover h1 {
-    transform: translateX(-4px);
+    transform:
+        translateX(-4px);
 }
 
 
-.brand-side .tagline {
+/* =========================================================
+   BRAND DESCRIPTION
+   ========================================================= */
+
+.brand-text p {
     position: relative;
     z-index: 2;
 
@@ -398,74 +541,83 @@ body {
 
     margin-bottom: 32px;
 
-    color: rgba(255, 255, 255, 0.82);
+    color:
+        rgba(255, 255, 255, 0.82);
 
     font-size: 19px;
+
     line-height: 2;
 
     transition:
         color 0.4s ease;
 }
 
-.brand-side:hover .tagline {
-    color: rgba(255, 255, 255, 0.94);
+.brand-side:hover .brand-text p {
+    color:
+        rgba(255, 255, 255, 0.95);
 }
 
 
 /* =========================================================
-   SMALL BRAND LABEL
+   BRAND FEATURES
    ========================================================= */
 
-.brand-label {
+.brand-features {
     position: relative;
     z-index: 2;
 
-    display: inline-flex;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
 
-    width: fit-content;
+    gap: 13px;
 
-    padding: 8px 14px;
-
-    margin-bottom: 20px;
-
-    border: 1px solid rgba(255, 255, 255, 0.17);
-    border-radius: 999px;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(25, 182, 165, 0.13),
-            rgba(89, 103, 232, 0.13),
-            rgba(244, 123, 104, 0.10)
-        );
-
-    color: rgba(255, 255, 255, 0.72);
-
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-
-    letter-spacing: 1.7px;
-
-    transition:
-        border-color 0.4s ease,
-        background 0.4s ease,
-        color 0.4s ease;
+    margin-top: 6px;
 }
 
-.brand-side:hover .brand-label {
-    color: #ffffff;
+.feature {
+    display: flex;
+    align-items: center;
 
-    border-color: rgba(255, 255, 255, 0.30);
+    gap: 11px;
+
+    color:
+        rgba(255, 255, 255, 0.78);
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.feature:hover {
+    color:
+        #ffffff;
+
+    transform:
+        translateX(-4px);
+}
+
+.feature-dot {
+    flex: 0 0 auto;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
 
     background:
         linear-gradient(
-            90deg,
-            rgba(25, 182, 165, 0.20),
-            rgba(89, 103, 232, 0.18),
-            rgba(244, 123, 104, 0.15)
+            135deg,
+            var(--teal),
+            var(--champagne)
         );
+
+    box-shadow:
+        0 0 14px
+        rgba(25, 182, 165, 0.45);
 }
 
 
@@ -492,8 +644,38 @@ body {
 
 
 /* =========================================================
-   FORM HEADER
+   FORM CONTAINER
    ========================================================= */
+
+.form-container {
+    width: 100%;
+    max-width: 430px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   FORM HEADING
+   ========================================================= */
+
+.form-heading {
+    margin-bottom: 28px;
+}
+
+.welcome {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--teal);
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    line-height: 1.8;
+}
 
 .form-side h2 {
     margin-bottom: 10px;
@@ -501,16 +683,17 @@ body {
     color: var(--text-dark);
 
     font-size: 30px;
+
     line-height: 1.5;
+
     font-weight: 800;
 }
 
-.form-side .form-intro {
-    margin-bottom: 28px;
-
+.form-heading p {
     color: var(--text-soft);
 
     font-size: 15px;
+
     line-height: 1.9;
 }
 
@@ -526,19 +709,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+
     gap: 12px;
 
     margin-bottom: 22px;
 
-    border: 1px solid rgba(22, 32, 51, 0.12);
-    border-radius: var(--radius-small);
+    border:
+        1px solid
+        rgba(22, 32, 51, 0.12);
 
-    background: rgba(255, 255, 255, 0.85);
+    border-radius:
+        var(--radius-small);
 
-    color: var(--text-dark);
+    background:
+        rgba(255, 255, 255, 0.85);
+
+    color:
+        var(--text-dark);
 
     font-family: inherit;
+
     font-size: 15px;
+
     font-weight: 700;
 
     cursor: pointer;
@@ -551,9 +743,11 @@ body {
 }
 
 .google-button:hover {
-    transform: translateY(-2px);
+    transform:
+        translateY(-2px);
 
-    border-color: rgba(25, 182, 165, 0.35);
+    border-color:
+        rgba(25, 182, 165, 0.35);
 
     background:
         linear-gradient(
@@ -564,11 +758,47 @@ body {
         );
 
     box-shadow:
-        0 12px 25px rgba(16, 24, 39, 0.10);
+        0 12px 25px
+        rgba(16, 24, 39, 0.10);
 }
 
 .google-button:active {
-    transform: translateY(0);
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   GOOGLE ICON
+   ========================================================= */
+
+.google-icon {
+    width: 24px;
+    height: 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        #ffffff;
+
+    color:
+        #4285f4;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 2px 6px
+        rgba(0, 0, 0, 0.10);
 }
 
 
@@ -579,11 +809,14 @@ body {
 .divider {
     display: flex;
     align-items: center;
+
     gap: 14px;
 
-    margin: 8px 0 22px;
+    margin:
+        8px 0 22px;
 
-    color: #8a93a3;
+    color:
+        #8a93a3;
 
     font-size: 12px;
 }
@@ -607,21 +840,32 @@ body {
 
 
 /* =========================================================
-   FORM GROUP
+   FORM
    ========================================================= */
 
-.form-group {
+.signup-form {
+    width: 100%;
+}
+
+
+/* =========================================================
+   FIELD
+   ========================================================= */
+
+.field {
     margin-bottom: 17px;
 }
 
-.form-group label {
+.field label {
     display: block;
 
     margin-bottom: 8px;
 
-    color: var(--text-dark);
+    color:
+        var(--text-dark);
 
     font-size: 14px;
+
     font-weight: 700;
 }
 
@@ -630,22 +874,30 @@ body {
    INPUTS
    ========================================================= */
 
-.form-group input {
+.field input {
     width: 100%;
     height: 52px;
 
-    padding: 0 16px;
+    padding:
+        0 16px;
 
-    border: 1px solid rgba(22, 32, 51, 0.13);
-    border-radius: var(--radius-small);
+    border:
+        1px solid
+        rgba(22, 32, 51, 0.13);
+
+    border-radius:
+        var(--radius-small);
 
     outline: none;
 
-    background: rgba(255, 255, 255, 0.84);
+    background:
+        rgba(255, 255, 255, 0.84);
 
-    color: var(--text-dark);
+    color:
+        var(--text-dark);
 
     font-family: inherit;
+
     font-size: 15px;
 
     transition:
@@ -655,33 +907,40 @@ body {
         transform 0.3s ease;
 }
 
-.form-group input:hover {
-    background: #ffffff;
+.field input:hover {
+    background:
+        #ffffff;
 
-    border-color: rgba(25, 182, 165, 0.30);
+    border-color:
+        rgba(25, 182, 165, 0.30);
 }
 
-.form-group input:focus {
-    background: #ffffff;
+.field input:focus {
+    background:
+        #ffffff;
 
-    border-color: var(--teal);
+    border-color:
+        var(--teal);
 
     box-shadow:
-        0 0 0 4px rgba(25, 182, 165, 0.10);
+        0 0 0 4px
+        rgba(25, 182, 165, 0.10);
 
-    transform: translateY(-1px);
+    transform:
+        translateY(-1px);
 }
 
-.form-group input::placeholder {
-    color: #9aa3b1;
+.field input::placeholder {
+    color:
+        #9aa3b1;
 }
 
 
 /* =========================================================
-   MAIN SIGNUP BUTTON
+   PRIMARY BUTTON
    ========================================================= */
 
-.signup-button {
+.primary-button {
     position: relative;
 
     width: 100%;
@@ -690,7 +949,9 @@ body {
     margin-top: 7px;
 
     border: 0;
-    border-radius: var(--radius-small);
+
+    border-radius:
+        var(--radius-small);
 
     overflow: hidden;
 
@@ -703,18 +964,23 @@ body {
             var(--coral) 100%
         );
 
-    background-size: 220% 100%;
+    background-size:
+        220% 100%;
 
-    color: #ffffff;
+    color:
+        #ffffff;
 
     font-family: inherit;
+
     font-size: 16px;
+
     font-weight: 800;
 
     cursor: pointer;
 
     box-shadow:
-        0 13px 30px rgba(50, 100, 190, 0.22);
+        0 13px 30px
+        rgba(50, 100, 190, 0.22);
 
     transition:
         transform 0.35s ease,
@@ -722,49 +988,85 @@ body {
         background-position 0.7s ease;
 }
 
-.signup-button:hover {
-    transform: translateY(-3px);
+.primary-button:hover {
+    transform:
+        translateY(-3px);
 
-    background-position: 100% 50%;
+    background-position:
+        100% 50%;
 
     box-shadow:
-        0 18px 38px rgba(50, 100, 190, 0.28),
-        0 0 30px rgba(25, 182, 165, 0.12);
+        0 18px 38px
+        rgba(50, 100, 190, 0.28),
+        0 0 30px
+        rgba(25, 182, 165, 0.12);
 }
 
-.signup-button:active {
-    transform: translateY(0);
+.primary-button:active {
+    transform:
+        translateY(0);
 }
 
 
 /* =========================================================
-   LOGIN LINK
+   LOGIN ROW
    ========================================================= */
 
 .login-row {
     margin-top: 22px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 5px;
+
     text-align: center;
 
-    color: var(--text-soft);
+    color:
+        var(--text-soft);
 
     font-size: 14px;
+
     line-height: 1.8;
 }
 
-.login-row a {
-    color: var(--indigo);
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.login-link {
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color:
+        var(--indigo);
+
+    font-family: inherit;
+
+    font-size: inherit;
 
     font-weight: 800;
 
-    text-decoration: none;
+    cursor: pointer;
 
     transition:
-        color 0.3s ease;
+        color 0.3s ease,
+        transform 0.3s ease;
 }
 
-.login-row a:hover {
-    color: var(--teal);
+.login-link:hover {
+    color:
+        var(--teal);
+
+    transform:
+        translateY(-1px);
 }
 
 
@@ -775,68 +1077,157 @@ body {
 .security-note {
     display: flex;
     align-items: flex-start;
+
     gap: 9px;
 
     margin-top: 24px;
     padding-top: 18px;
 
-    border-top: 1px solid rgba(22, 32, 51, 0.08);
+    border-top:
+        1px solid
+        rgba(22, 32, 51, 0.08);
 
-    color: #8a93a3;
+    color:
+        #8a93a3;
 
     font-size: 12px;
+
     line-height: 1.8;
 }
 
-.security-note span {
-    flex: 1;
+.security-icon {
+    flex: 0 0 auto;
+
+    width: 20px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(25, 182, 165, 0.10);
+
+    color:
+        var(--teal);
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 800;
 }
 
 
 /* =========================================================
-   BUTTON FOCUS
+   FORM MESSAGE
+   ========================================================= */
+
+.form-message {
+    min-height: 22px;
+
+    margin-top: 14px;
+
+    color:
+        var(--text-soft);
+
+    font-size: 13px;
+
+    line-height: 1.8;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   BUTTON / INPUT FOCUS
    ========================================================= */
 
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
-    outline: 3px solid rgba(25, 182, 165, 0.28);
-    outline-offset: 3px;
+    outline:
+        3px solid
+        rgba(25, 182, 165, 0.28);
+
+    outline-offset:
+        3px;
 }
 
 
 /* =========================================================
-   MOBILE
+   DISABLED BUTTON
+   ========================================================= */
+
+button:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.65;
+
+    transform: none !important;
+}
+
+
+/* =========================================================
+   TABLET
    ========================================================= */
 
 @media (max-width: 900px) {
 
     .page {
-        padding: 24px 16px;
+        padding:
+            24px 16px;
     }
 
     .auth-card {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            1fr;
 
-        max-width: 620px;
+        max-width:
+            620px;
     }
 
     .brand-side {
-        min-height: auto;
+        min-height:
+            auto;
 
-        padding: 45px 38px;
+        padding:
+            45px 38px;
     }
 
     .form-side {
-        padding: 42px 38px;
+        padding:
+            42px 38px;
+    }
+
+    .logo-wrap {
+        width: 125px;
+        height: 125px;
+
+        margin-bottom:
+            25px;
+    }
+
+    .brand-logo {
+        max-width:
+            105px;
+
+        max-height:
+            105px;
     }
 
     .brand-side h1 {
-        font-size: 43px;
+        font-size:
+            43px;
     }
 
-    .brand-side .tagline {
-        font-size: 17px;
+    .brand-text p {
+        font-size:
+            17px;
     }
 }
 
@@ -848,48 +1239,138 @@ input:focus-visible {
 @media (max-width: 520px) {
 
     .page {
-        padding: 12px;
+        padding:
+            12px;
     }
 
     .auth-card {
-        border-radius: 23px;
+        border-radius:
+            23px;
     }
 
     .brand-side {
-        padding: 34px 25px;
+        padding:
+            34px 25px;
     }
 
     .form-side {
-        padding: 34px 25px;
+        padding:
+            34px 25px;
     }
 
-    .logo-mark {
-        width: 64px;
-        height: 64px;
+    .logo-wrap {
+        width: 105px;
+        height: 105px;
 
-        margin-bottom: 22px;
+        margin-bottom:
+            22px;
 
-        border-radius: 19px;
+        border-radius:
+            23px;
+    }
+
+    .brand-logo {
+        max-width:
+            88px;
+
+        max-height:
+            88px;
+
+        border-radius:
+            16px;
+    }
+
+    .brand-small {
+        font-size:
+            10px;
+
+        letter-spacing:
+            1.2px;
     }
 
     .brand-side h1 {
-        font-size: 36px;
+        font-size:
+            36px;
     }
 
-    .brand-side .tagline {
-        font-size: 16px;
-        line-height: 1.9;
+    .brand-text p {
+        font-size:
+            16px;
+
+        line-height:
+            1.9;
+    }
+
+    .feature {
+        font-size:
+            13px;
     }
 
     .form-side h2 {
-        font-size: 26px;
+        font-size:
+            26px;
+    }
+
+    .google-button {
+        font-size:
+            14px;
     }
 
     .light {
-        width: 280px;
-        height: 280px;
+        width:
+            280px;
 
-        filter: blur(65px);
+        height:
+            280px;
+
+        filter:
+            blur(65px);
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .brand-side {
+        padding:
+            30px 20px;
+    }
+
+    .form-side {
+        padding:
+            30px 20px;
+    }
+
+    .logo-wrap {
+        width: 90px;
+        height: 90px;
+    }
+
+    .brand-logo {
+        max-width:
+            76px;
+
+        max-height:
+            76px;
+    }
+
+    .brand-side h1 {
+        font-size:
+            31px;
+    }
+
+    .form-side h2 {
+        font-size:
+            24px;
+    }
+
+    .login-row {
+        font-size:
+            13px;
     }
 }
 
@@ -901,14 +1382,20 @@ input:focus-visible {
 @media (prefers-reduced-motion: reduce) {
 
     html {
-        scroll-behavior: auto;
+        scroll-behavior:
+            auto;
     }
 
     *,
     *::before,
     *::after {
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
+        transition-duration:
+            0.01ms !important;
+
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
     }
 }
