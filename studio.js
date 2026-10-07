@@ -1,787 +1,1288 @@
-
 /* =========================================================
-   URDU VOICE STUDIO AI
-   studio.js
-   Studio Front-End Controller
-   ========================================================= */
+URDU VOICE STUDIO AI
+studio.js
+Studio Front-End Controller
+Backend Connected Version
+========================================================= */
 
 (function () {
-    "use strict";
+"use strict";
 
-    /* =========================================================
-       ELEMENTS
-       ========================================================= */
+```
+/* =========================================================
+   BACKEND
+   ========================================================= */
 
-    const intro = document.getElementById("studioIntro");
-    const studioMain = document.getElementById("studioMain");
-
-    const studioText = document.getElementById("studioText");
-    const wordCounter = document.getElementById("wordCounter");
-
-    const generateTextButton =
-        document.getElementById("generateTextButton");
-
-    const imageButton =
-        document.getElementById("imageButton");
-
-    const improveTextButton =
-        document.getElementById("improveTextButton");
-
-    const voiceButton =
-        document.getElementById("voiceButton");
-
-    const clearTextButton =
-        document.getElementById("clearTextButton");
-
-    const copyTextButton =
-        document.getElementById("copyTextButton");
-
-    const languageSelect =
-        document.getElementById("languageSelect");
-
-    const voiceSelect =
-        document.getElementById("voiceSelect");
-
-    const speedSelect =
-        document.getElementById("speedSelect");
-
-    const formatSelect =
-        document.getElementById("formatSelect");
-
-    const aiResponseSection =
-        document.getElementById("aiResponseSection");
-
-    const aiResponseBox =
-        document.getElementById("aiResponseBox");
-
-    const responseEmpty =
-        document.getElementById("responseEmpty");
-
-    const responseContent =
-        document.getElementById("responseContent");
-
-    const copyResponseButton =
-        document.getElementById("copyResponseButton");
-
-    const useResponseButton =
-        document.getElementById("useResponseButton");
-
-    const audio =
-        document.getElementById("studioAudio");
-
-    const playAudioButton =
-        document.getElementById("playAudioButton");
-
-    const pauseAudioButton =
-        document.getElementById("pauseAudioButton");
-
-    const stopAudioButton =
-        document.getElementById("stopAudioButton");
-
-    const downloadAudioButton =
-        document.getElementById("downloadAudioButton");
-
-    const audioStatus =
-        document.getElementById("audioStatus");
+const API_BASE_URL = "http://localhost:3000";
+const AI_ENDPOINT = API_BASE_URL + "/api/ai";
 
 
-    /* =========================================================
-       BASIC STATE
-       ========================================================= */
+/* =========================================================
+   STATE
+   ========================================================= */
 
-    let currentAudioUrl = "";
-    let isGenerating = false;
+let currentAudioUrl = "";
+let isGenerating = false;
 
 
-    /* =========================================================
-       HELPER
-       ========================================================= */
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
 
-    function getText() {
-        return studioText ? studioText.value.trim() : "";
+let intro = null;
+let studioMain = null;
+let studioText = null;
+let wordCounter = null;
+
+let generateTextButton = null;
+let imageButton = null;
+let improveTextButton = null;
+let voiceButton = null;
+
+let clearTextButton = null;
+let copyTextButton = null;
+
+let languageSelect = null;
+let voiceSelect = null;
+let speedSelect = null;
+let formatSelect = null;
+
+let aiResponseSection = null;
+let aiResponseBox = null;
+let responseEmpty = null;
+let responseContent = null;
+
+let copyResponseButton = null;
+let useResponseButton = null;
+
+let audio = null;
+
+let playAudioButton = null;
+let pauseAudioButton = null;
+let stopAudioButton = null;
+let downloadAudioButton = null;
+
+let audioStatus = null;
+
+
+/* =========================================================
+   GET ELEMENTS
+   ========================================================= */
+
+function getElements() {
+
+    intro =
+        document.getElementById("studioIntro");
+
+    studioMain =
+        document.getElementById("studioMain");
+
+    studioText =
+        document.getElementById("studioText");
+
+    wordCounter =
+        document.getElementById("wordCounter");
+
+
+    generateTextButton =
+        document.getElementById(
+            "generateTextButton"
+        );
+
+    imageButton =
+        document.getElementById(
+            "imageButton"
+        );
+
+    improveTextButton =
+        document.getElementById(
+            "improveTextButton"
+        );
+
+    voiceButton =
+        document.getElementById(
+            "voiceButton"
+        );
+
+
+    clearTextButton =
+        document.getElementById(
+            "clearTextButton"
+        );
+
+    copyTextButton =
+        document.getElementById(
+            "copyTextButton"
+        );
+
+
+    languageSelect =
+        document.getElementById(
+            "languageSelect"
+        );
+
+    voiceSelect =
+        document.getElementById(
+            "voiceSelect"
+        );
+
+    speedSelect =
+        document.getElementById(
+            "speedSelect"
+        );
+
+    formatSelect =
+        document.getElementById(
+            "formatSelect"
+        );
+
+
+    aiResponseSection =
+        document.getElementById(
+            "aiResponseSection"
+        );
+
+    aiResponseBox =
+        document.getElementById(
+            "aiResponseBox"
+        );
+
+    responseEmpty =
+        document.getElementById(
+            "responseEmpty"
+        );
+
+    responseContent =
+        document.getElementById(
+            "responseContent"
+        );
+
+
+    copyResponseButton =
+        document.getElementById(
+            "copyResponseButton"
+        );
+
+    useResponseButton =
+        document.getElementById(
+            "useResponseButton"
+        );
+
+
+    audio =
+        document.getElementById(
+            "studioAudio"
+        );
+
+
+    playAudioButton =
+        document.getElementById(
+            "playAudioButton"
+        );
+
+    pauseAudioButton =
+        document.getElementById(
+            "pauseAudioButton"
+        );
+
+    stopAudioButton =
+        document.getElementById(
+            "stopAudioButton"
+        );
+
+    downloadAudioButton =
+        document.getElementById(
+            "downloadAudioButton"
+        );
+
+
+    audioStatus =
+        document.getElementById(
+            "audioStatus"
+        );
+}
+
+
+/* =========================================================
+   HELPER
+   ========================================================= */
+
+function getText() {
+
+    return studioText
+        ? studioText.value.trim()
+        : "";
+}
+
+
+function setText(text) {
+
+    if (!studioText) return;
+
+    studioText.value =
+        text || "";
+
+    updateWordCounter();
+}
+
+
+function showMessage(message) {
+
+    if (!aiResponseSection) return;
+
+    aiResponseSection.hidden = false;
+
+
+    if (responseEmpty) {
+
+        responseEmpty.hidden = true;
     }
 
 
-    function setText(text) {
-        if (!studioText) return;
+    if (responseContent) {
 
-        studioText.value = text || "";
+        responseContent.hidden = false;
 
-        updateWordCounter();
+        responseContent.textContent =
+            message || "";
+    }
+}
+
+
+function hideResponse() {
+
+    if (!aiResponseSection) return;
+
+    aiResponseSection.hidden = true;
+
+
+    if (responseEmpty) {
+
+        responseEmpty.hidden = false;
     }
 
 
-    function showMessage(message) {
-        if (!aiResponseSection) return;
+    if (responseContent) {
 
-        aiResponseSection.hidden = false;
+        responseContent.hidden = true;
 
-        if (responseEmpty) {
-            responseEmpty.hidden = true;
-        }
+        responseContent.textContent =
+            "";
+    }
+}
 
-        if (responseContent) {
-            responseContent.hidden = false;
-            responseContent.textContent = message;
-        }
+
+function setAudioStatus(message) {
+
+    if (!audioStatus) return;
+
+    audioStatus.textContent =
+        message || "";
+}
+
+
+/* =========================================================
+   AI BACKEND REQUEST
+   ========================================================= */
+
+async function callAI(tool, text) {
+
+    const cleanText =
+        typeof text === "string"
+            ? text.trim()
+            : "";
+
+
+    if (!cleanText) {
+
+        throw new Error(
+            "براہِ کرم پہلے متن لکھیں۔"
+        );
     }
 
 
-    function hideResponse() {
-        if (!aiResponseSection) return;
+    const language =
+        languageSelect &&
+        languageSelect.value
+            ? languageSelect.value
+            : "ur-PK";
 
-        aiResponseSection.hidden = true;
 
-        if (responseEmpty) {
-            responseEmpty.hidden = false;
-        }
+    let response;
 
-        if (responseContent) {
-            responseContent.hidden = true;
-            responseContent.textContent = "";
-        }
+
+    try {
+
+        response =
+            await fetch(
+                AI_ENDPOINT,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        tool:
+                            tool || "default",
+
+                        text:
+                            cleanText,
+
+                        language:
+                            language
+                    })
+                }
+            );
+
+    } catch (networkError) {
+
+        throw new Error(
+            "Backend سے رابطہ نہیں ہو سکا۔ یقینی بنائیں کہ Command Prompt میں Server چل رہا ہے۔"
+        );
     }
 
 
-    /* =========================================================
-       WORD COUNTER
-       ========================================================= */
+    let data = null;
 
-    function updateWordCounter() {
 
-        if (!studioText || !wordCounter) return;
+    try {
 
-        const text = studioText.value.trim();
+        data =
+            await response.json();
 
-        if (!text) {
-            wordCounter.textContent = "0 الفاظ";
-            return;
-        }
+    } catch (jsonError) {
 
-        const words = text
+        throw new Error(
+            "Backend نے درست جواب نہیں دیا۔"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        !data ||
+        !data.ok
+    ) {
+
+        throw new Error(
+
+            data &&
+            data.error
+
+                ? data.error
+
+                : "AI Backend سے جواب حاصل نہیں ہو سکا۔"
+        );
+    }
+
+
+    return data;
+}
+
+
+/* =========================================================
+   WORD COUNTER
+   ========================================================= */
+
+function updateWordCounter() {
+
+    if (
+        !studioText ||
+        !wordCounter
+    ) {
+        return;
+    }
+
+
+    const text =
+        studioText.value.trim();
+
+
+    if (!text) {
+
+        wordCounter.textContent =
+            "0 الفاظ";
+
+        return;
+    }
+
+
+    const words =
+        text
             .split(/\s+/)
             .filter(Boolean);
 
-        wordCounter.textContent =
-            words.length + " الفاظ";
+
+    wordCounter.textContent =
+        words.length +
+        " الفاظ";
+}
+
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+
+function startStudioIntro() {
+
+    if (!intro) {
+
+        if (studioMain) {
+
+            studioMain.style.visibility =
+                "visible";
+
+            studioMain.style.opacity =
+                "1";
+        }
+
+        return;
     }
+
+
+    if (studioMain) {
+
+        studioMain.style.visibility =
+            "hidden";
+
+        studioMain.style.opacity =
+            "0";
+    }
+
+
+    requestAnimationFrame(
+        function () {
+
+            intro.classList.add(
+                "intro-active"
+            );
+
+
+            setTimeout(
+                function () {
+
+                    intro.classList.add(
+                        "intro-finished"
+                    );
+
+
+                    setTimeout(
+                        function () {
+
+                            intro.style.display =
+                                "none";
+
+
+                            if (studioMain) {
+
+                                studioMain.style.visibility =
+                                    "visible";
+
+                                studioMain.style.opacity =
+                                    "1";
+                            }
+
+                        },
+                        650
+                    );
+
+                },
+                3600
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   INTRO SOUND
+   ========================================================= */
+
+function playIntroSound() {
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+
+        if (!AudioContext) return;
+
+
+        const context =
+            new AudioContext();
+
+
+        if (
+            context.state ===
+            "suspended"
+        ) {
+
+            context
+                .resume()
+                .catch(
+                    function () {}
+                );
+        }
+
+
+        const oscillator =
+            context.createOscillator();
+
+
+        const gain =
+            context.createGain();
+
+
+        oscillator.type =
+            "sine";
+
+
+        oscillator.frequency.setValueAtTime(
+            392,
+            context.currentTime
+        );
+
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            523.25,
+            context.currentTime + 1.8
+        );
+
+
+        gain.gain.setValueAtTime(
+            0.0001,
+            context.currentTime
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.035,
+            context.currentTime + 0.35
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            context.currentTime + 2.1
+        );
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            context.destination
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            context.currentTime + 2.2
+        );
+
+
+        setTimeout(
+            function () {
+
+                try {
+
+                    context.close();
+
+                } catch (error) {}
+
+            },
+            2500
+        );
+
+    } catch (error) {
+
+        /* Optional sound */
+    }
+}
+
+
+/* =========================================================
+   TEXT ACTIONS
+   ========================================================= */
+
+function clearText() {
+
+    setText("");
+
+    hideResponse();
 
 
     if (studioText) {
-        studioText.addEventListener(
-            "input",
-            updateWordCounter
+
+        studioText.focus();
+    }
+}
+
+
+async function copyText() {
+
+    const text =
+        getText();
+
+
+    if (!text) {
+
+        showMessage(
+            "کاپی کرنے کے لیے پہلے متن لکھیں۔"
         );
+
+        return;
     }
 
 
-    /* =========================================================
-       INTRO
-       ========================================================= */
+    try {
 
-    function startStudioIntro() {
-
-        if (!intro) return;
-
-        if (studioMain) {
-            studioMain.style.visibility = "hidden";
-            studioMain.style.opacity = "0";
-        }
-
-        requestAnimationFrame(function () {
-
-            intro.classList.add("intro-active");
-
-            setTimeout(function () {
-
-                intro.classList.add("intro-finished");
-
-                setTimeout(function () {
-
-                    intro.style.display = "none";
-
-                    if (studioMain) {
-                        studioMain.style.visibility = "visible";
-                        studioMain.style.opacity = "1";
-                    }
-
-                }, 650);
-
-            }, 3600);
-        });
-    }
+        await navigator.clipboard
+            .writeText(text);
 
 
-    /* =========================================================
-       INTRO SOUND
-       ========================================================= */
+        showMessage(
+            "متن کامیابی سے کاپی ہو گیا ہے۔"
+        );
 
-    function playIntroSound() {
-
-        /*
-         Browser autoplay policies may block audio.
-         Therefore we do not force audio playback.
-         Later we can connect a proper studio intro sound.
-        */
-
-        try {
-
-            const audioContext =
-                window.AudioContext ||
-                window.webkitAudioContext;
-
-            if (!audioContext) return;
-
-            const context = new audioContext();
-
-            if (context.state === "suspended") {
-                context.resume().catch(function () {});
-            }
-
-            const oscillator =
-                context.createOscillator();
-
-            const gain =
-                context.createGain();
-
-            oscillator.type = "sine";
-
-            oscillator.frequency.setValueAtTime(
-                392,
-                context.currentTime
-            );
-
-            oscillator.frequency.exponentialRampToValueAtTime(
-                523.25,
-                context.currentTime + 1.8
-            );
-
-            gain.gain.setValueAtTime(
-                0.0001,
-                context.currentTime
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.035,
-                context.currentTime + 0.35
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                context.currentTime + 2.1
-            );
-
-            oscillator.connect(gain);
-            gain.connect(context.destination);
-
-            oscillator.start();
-
-            oscillator.stop(
-                context.currentTime + 2.2
-            );
-
-            setTimeout(function () {
-
-                try {
-                    context.close();
-                } catch (error) {}
-
-            }, 2500);
-
-        } catch (error) {
-            /*
-             Sound is optional.
-             Never stop Studio because sound is blocked.
-            */
-        }
-    }
-
-
-    /* =========================================================
-       TEXT ACTIONS
-       ========================================================= */
-
-    function clearText() {
-
-        setText("");
-
-        hideResponse();
+    } catch (error) {
 
         if (studioText) {
+
+            studioText.focus();
+
+            studioText.select();
+
+
+            try {
+
+                document.execCommand(
+                    "copy"
+                );
+
+
+                showMessage(
+                    "متن کامیابی سے کاپی ہو گیا ہے۔"
+                );
+
+            } catch (copyError) {
+
+                showMessage(
+                    "متن کاپی نہیں ہو سکا۔"
+                );
+            }
+        }
+    }
+}
+
+
+/* =========================================================
+   AI TEXT GENERATION
+   ========================================================= */
+
+async function generateText() {
+
+    if (isGenerating) return;
+
+    isGenerating = true;
+
+
+    showMessage(
+        "اردو AI جواب تیار کر رہا ہے۔۔۔"
+    );
+
+
+    try {
+
+        const text =
+            getText();
+
+
+        const requestText =
+            text ||
+            "پاکستانی اردو میں ایک مختصر اور خوبصورت متن تیار کریں۔";
+
+
+        const data =
+            await callAI(
+                "default",
+                requestText
+            );
+
+
+        showMessage(
+            data.text ||
+            "AI نے کوئی متن واپس نہیں کیا۔"
+        );
+
+    } catch (error) {
+
+        showMessage(
+            "AI سے رابطہ نہیں ہو سکا: " +
+            error.message
+        );
+
+    } finally {
+
+        isGenerating = false;
+    }
+}
+
+
+/* =========================================================
+   IMPROVE TEXT
+   ========================================================= */
+
+async function improveText() {
+
+    const text =
+        getText();
+
+
+    if (!text) {
+
+        showMessage(
+            "متن بہتر کرنے کے لیے پہلے اپنا متن لکھیں۔"
+        );
+
+        return;
+    }
+
+
+    if (isGenerating) return;
+
+    isGenerating = true;
+
+
+    showMessage(
+        "آپ کا متن بہتر کیا جا رہا ہے۔۔۔"
+    );
+
+
+    try {
+
+        const data =
+            await callAI(
+                "improve",
+                text
+            );
+
+
+        showMessage(
+            data.text ||
+            "AI نے کوئی جواب واپس نہیں کیا۔"
+        );
+
+    } catch (error) {
+
+        showMessage(
+            "متن بہتر نہیں ہو سکا: " +
+            error.message
+        );
+
+    } finally {
+
+        isGenerating = false;
+    }
+}
+
+
+/* =========================================================
+   IMAGE AI
+   ========================================================= */
+
+async function openImageTool() {
+
+    const text =
+        getText();
+
+
+    if (!text) {
+
+        showMessage(
+            "تصویر کے لیے پہلے اپنی ہدایت یا خیال لکھیں۔"
+        );
+
+
+        if (studioText) {
+
             studioText.focus();
         }
+
+
+        return;
     }
 
 
-    async function copyText() {
+    if (isGenerating) return;
 
-        const text = getText();
-
-        if (!text) {
-            showMessage("کاپی کرنے کے لیے پہلے متن لکھیں۔");
-            return;
-        }
-
-        try {
-
-            await navigator.clipboard.writeText(text);
-
-            showMessage("متن کامیابی سے کاپی ہو گیا ہے۔");
-
-        } catch (error) {
-
-            /*
-             Fallback for browsers where Clipboard API
-             is unavailable.
-            */
-
-            if (studioText) {
-
-                studioText.focus();
-                studioText.select();
-
-                try {
-                    document.execCommand("copy");
-                    showMessage("متن کامیابی سے کاپی ہو گیا ہے۔");
-                } catch (copyError) {
-                    showMessage("متن کاپی نہیں ہو سکا۔");
-                }
-            }
-        }
-    }
+    isGenerating = true;
 
 
-    /* =========================================================
-       AI TEXT BUTTON
-       ========================================================= */
-
-    function generateText() {
-
-        /*
-         Real AI backend will be connected later.
-         For now we keep the interface functional.
-        */
-
-        showMessage(
-            "اردو AI معاون اگلے مرحلے میں شامل کیا جائے گا۔"
-        );
-    }
+    showMessage(
+        "Image AI کی درخواست تیار کی جا رہی ہے۔۔۔"
+    );
 
 
-    /* =========================================================
-       IMPROVE TEXT
-       ========================================================= */
+    try {
 
-    function improveText() {
-
-        const text = getText();
-
-        if (!text) {
-
-            showMessage(
-                "متن بہتر کرنے کے لیے پہلے اپنا متن لکھیں۔"
+        const data =
+            await callAI(
+                "image",
+                text
             );
 
-            return;
-        }
 
         showMessage(
-            "متن بہتر کرنے والا AI اگلے مرحلے میں شامل کیا جائے گا۔"
+            data.text ||
+            "Image AI کی درخواست مکمل ہوئی۔"
         );
-    }
 
-
-    /* =========================================================
-       IMAGE GENERATOR
-       ========================================================= */
-
-    function openImageTool() {
+    } catch (error) {
 
         showMessage(
-            "تصویر بنانے والا AI اگلے مرحلے میں شامل کیا جائے گا۔"
+            "Image AI سے رابطہ نہیں ہو سکا: " +
+            error.message
         );
+
+    } finally {
+
+        isGenerating = false;
     }
+}
 
 
-    /* =========================================================
-       VOICE GENERATION
-       ========================================================= */
+/* =========================================================
+   VOICE REQUEST
+   ========================================================= */
 
-    function generateVoice() {
+async function generateVoice() {
 
-        const text = getText();
+    const text =
+        getText();
 
-        if (!text) {
 
-            setAudioStatus(
-                "پہلے اردو متن لکھیں۔"
-            );
-
-            if (studioText) {
-                studioText.focus();
-            }
-
-            return;
-        }
-
-        if (isGenerating) return;
-
-        isGenerating = true;
+    if (!text) {
 
         setAudioStatus(
-            "آواز تیار کرنے کی تیاری ہو رہی ہے۔۔۔"
+            "پہلے اردو متن لکھیں۔"
         );
 
-        /*
-         ======================================================
-         TEMPORARY DEMO
-         ======================================================
 
-         Actual AI TTS server will be connected later.
+        if (studioText) {
 
-         We deliberately do not pretend that a real MP3
-         has been generated.
-        */
-
-        setTimeout(function () {
-
-            isGenerating = false;
-
-            setAudioStatus(
-                "اصل AI آواز کا نظام اگلے مرحلے میں شامل کیا جائے گا۔"
-            );
-
-        }, 700);
-    }
-
-
-    /* =========================================================
-       AUDIO STATUS
-       ========================================================= */
-
-    function setAudioStatus(message) {
-
-        if (!audioStatus) return;
-
-        audioStatus.textContent = message;
-    }
-
-
-    /* =========================================================
-       AUDIO CONTROLS
-       ========================================================= */
-
-    function playAudio() {
-
-        if (!audio) {
-
-            setAudioStatus(
-                "آڈیو پلیئر دستیاب نہیں ہے۔"
-            );
-
-            return;
+            studioText.focus();
         }
 
-        if (!audio.src) {
 
-            setAudioStatus(
-                "ابھی کوئی آڈیو موجود نہیں۔ پہلے آواز بنائیں۔"
+        return;
+    }
+
+
+    if (isGenerating) return;
+
+    isGenerating = true;
+
+
+    setAudioStatus(
+        "AI Voice درخواست Backend کو بھیجی جا رہی ہے۔۔۔"
+    );
+
+
+    try {
+
+        const data =
+            await callAI(
+                "voice",
+                text
             );
 
-            return;
-        }
 
-        audio.play().catch(function () {
-
-            setAudioStatus(
-                "آڈیو چلانے میں مسئلہ آیا۔"
-            );
-
-        });
-    }
-
-
-    function pauseAudio() {
-
-        if (!audio) return;
-
-        audio.pause();
-
-        setAudioStatus("آڈیو روک دی گئی ہے۔");
-    }
-
-
-    function stopAudio() {
-
-        if (!audio) return;
-
-        audio.pause();
-
-        try {
-            audio.currentTime = 0;
-        } catch (error) {}
-
-        setAudioStatus("آڈیو بند کر دی گئی ہے۔");
-    }
-
-
-    function downloadAudio() {
-
-        if (!audio || !audio.src) {
-
-            setAudioStatus(
-                "ڈاؤن لوڈ کرنے کے لیے ابھی کوئی آڈیو موجود نہیں۔"
-            );
-
-            return;
-        }
-
-        const link =
-            document.createElement("a");
-
-        link.href = audio.src;
-
-        link.download =
-            formatSelect &&
-            formatSelect.value === "wav"
-                ? "urdu-voice-studio.wav"
-                : "urdu-voice-studio.mp3";
-
-        document.body.appendChild(link);
-
-        link.click();
-
-        link.remove();
-    }
-
-
-    /* =========================================================
-       AUDIO EVENTS
-       ========================================================= */
-
-    if (audio) {
-
-        audio.addEventListener(
-            "play",
-            function () {
-                setAudioStatus("آڈیو چل رہی ہے۔۔۔");
-            }
+        showMessage(
+            data.text ||
+            "AI Voice درخواست مکمل ہوئی۔"
         );
 
-        audio.addEventListener(
-            "pause",
-            function () {
 
-                if (
-                    audio.currentTime > 0 &&
-                    audio.currentTime < audio.duration
-                ) {
-                    setAudioStatus("آڈیو روک دی گئی ہے۔");
-                }
-            }
+        setAudioStatus(
+            "AI Voice Backend سے رابطہ کامیاب ہے۔ MP3/WAV آواز کا اصل نظام اگلے مرحلے میں جوڑا جائے گا۔"
         );
 
-        audio.addEventListener(
-            "ended",
-            function () {
-                setAudioStatus("آڈیو مکمل ہو گئی ہے۔");
-            }
+    } catch (error) {
+
+        setAudioStatus(
+            "AI Voice سے رابطہ نہیں ہو سکا: " +
+            error.message
         );
 
-        audio.addEventListener(
-            "error",
+    } finally {
+
+        isGenerating = false;
+    }
+}
+
+
+/* =========================================================
+   AUDIO CONTROLS
+   ========================================================= */
+
+function playAudio() {
+
+    if (!audio) {
+
+        setAudioStatus(
+            "آڈیو پلیئر دستیاب نہیں ہے۔"
+        );
+
+        return;
+    }
+
+
+    if (!audio.src) {
+
+        setAudioStatus(
+            "ابھی کوئی آڈیو موجود نہیں۔ پہلے آواز بنائیں۔"
+        );
+
+        return;
+    }
+
+
+    audio
+        .play()
+        .catch(
             function () {
+
                 setAudioStatus(
-                    "آڈیو فائل چلانے میں مسئلہ آیا۔"
+                    "آڈیو چلانے میں مسئلہ آیا۔"
                 );
             }
         );
-    }
+}
 
 
-    /* =========================================================
-       RESPONSE ACTIONS
-       ========================================================= */
+function pauseAudio() {
 
-    async function copyResponse() {
+    if (!audio) return;
 
-        if (!responseContent) return;
-
-        const text =
-            responseContent.textContent.trim();
-
-        if (!text) return;
-
-        try {
-
-            await navigator.clipboard.writeText(text);
-
-            setAudioStatus(
-                "AI جواب کامیابی سے کاپی ہو گیا ہے۔"
-            );
-
-        } catch (error) {
-
-            setAudioStatus(
-                "AI جواب کاپی نہیں ہو سکا۔"
-            );
-        }
-    }
+    audio.pause();
 
 
-    function useResponse() {
+    setAudioStatus(
+        "آڈیو روک دی گئی ہے۔"
+    );
+}
 
-        if (!responseContent) return;
 
-        const text =
-            responseContent.textContent.trim();
+function stopAudio() {
 
-        if (!text) return;
+    if (!audio) return;
 
-        setText(text);
+    audio.pause();
 
-        if (studioText) {
-            studioText.focus();
-        }
+
+    try {
+
+        audio.currentTime = 0;
+
+    } catch (error) {}
+
+
+    setAudioStatus(
+        "آڈیو بند کر دی گئی ہے۔"
+    );
+}
+
+
+function downloadAudio() {
+
+    if (
+        !audio ||
+        !audio.src
+    ) {
 
         setAudioStatus(
-            "AI جواب Voice Studio میں منتقل کر دیا گیا ہے۔"
+            "ڈاؤن لوڈ کرنے کے لیے ابھی کوئی آڈیو موجود نہیں۔"
         );
+
+        return;
     }
 
 
-    /* =========================================================
-       SETTINGS
-       ========================================================= */
+    const link =
+        document.createElement(
+            "a"
+        );
 
-    function saveSettings() {
 
-        try {
+    link.href =
+        audio.src;
 
-            const settings = {
 
-                language:
-                    languageSelect
-                        ? languageSelect.value
-                        : "ur-PK",
+    link.download =
+        formatSelect &&
+        formatSelect.value === "wav"
 
-                voice:
-                    voiceSelect
-                        ? voiceSelect.value
-                        : "default",
+            ? "urdu-voice-studio.wav"
 
-                speed:
-                    speedSelect
-                        ? speedSelect.value
-                        : "1",
+            : "urdu-voice-studio.mp3";
 
-                format:
-                    formatSelect
-                        ? formatSelect.value
-                        : "mp3"
-            };
 
-            localStorage.setItem(
-                "urduVoiceStudioStudioSettings",
-                JSON.stringify(settings)
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+}
+
+
+/* =========================================================
+   AUDIO EVENTS
+   ========================================================= */
+
+function setupAudioEvents() {
+
+    if (!audio) return;
+
+
+    audio.addEventListener(
+        "play",
+        function () {
+
+            setAudioStatus(
+                "آڈیو چل رہی ہے۔۔۔"
+            );
+        }
+    );
+
+
+    audio.addEventListener(
+        "pause",
+        function () {
+
+            if (
+                audio.currentTime > 0 &&
+                audio.currentTime <
+                    audio.duration
+            ) {
+
+                setAudioStatus(
+                    "آڈیو روک دی گئی ہے۔"
+                );
+            }
+        }
+    );
+
+
+    audio.addEventListener(
+        "ended",
+        function () {
+
+            setAudioStatus(
+                "آڈیو مکمل ہو گئی ہے۔"
+            );
+        }
+    );
+
+
+    audio.addEventListener(
+        "error",
+        function () {
+
+            setAudioStatus(
+                "آڈیو فائل چلانے میں مسئلہ آیا۔"
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   RESPONSE ACTIONS
+   ========================================================= */
+
+async function copyResponse() {
+
+    if (!responseContent) return;
+
+
+    const text =
+        responseContent.textContent
+            .trim();
+
+
+    if (!text) return;
+
+
+    try {
+
+        await navigator.clipboard
+            .writeText(text);
+
+
+        setAudioStatus(
+            "AI جواب کامیابی سے کاپی ہو گیا ہے۔"
+        );
+
+    } catch (error) {
+
+        setAudioStatus(
+            "AI جواب کاپی نہیں ہو سکا۔"
+        );
+    }
+}
+
+
+function useResponse() {
+
+    if (!responseContent) return;
+
+
+    const text =
+        responseContent.textContent
+            .trim();
+
+
+    if (!text) return;
+
+
+    setText(text);
+
+
+    if (studioText) {
+
+        studioText.focus();
+    }
+
+
+    setAudioStatus(
+        "AI جواب Voice Studio میں منتقل کر دیا گیا ہے۔"
+    );
+}
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+function saveSettings() {
+
+    try {
+
+        const settings = {
+
+            language:
+                languageSelect
+                    ? languageSelect.value
+                    : "ur-PK",
+
+            voice:
+                voiceSelect
+                    ? voiceSelect.value
+                    : "default",
+
+            speed:
+                speedSelect
+                    ? speedSelect.value
+                    : "1",
+
+            format:
+                formatSelect
+                    ? formatSelect.value
+                    : "mp3"
+        };
+
+
+        localStorage.setItem(
+            "urduVoiceStudioStudioSettings",
+            JSON.stringify(
+                settings
+            )
+        );
+
+    } catch (error) {}
+}
+
+
+function loadSettings() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "urduVoiceStudioStudioSettings"
             );
 
-        } catch (error) {
-            /*
-             Settings are optional.
-            */
+
+        if (!saved) return;
+
+
+        const settings =
+            JSON.parse(saved);
+
+
+        if (
+            languageSelect &&
+            settings.language
+        ) {
+
+            languageSelect.value =
+                settings.language;
         }
-    }
 
 
-    function loadSettings() {
+        if (
+            voiceSelect &&
+            settings.voice
+        ) {
 
-        try {
-
-            const saved =
-                localStorage.getItem(
-                    "urduVoiceStudioStudioSettings"
-                );
-
-            if (!saved) return;
-
-            const settings =
-                JSON.parse(saved);
-
-            if (
-                languageSelect &&
-                settings.language
-            ) {
-                languageSelect.value =
-                    settings.language;
-            }
-
-            if (
-                voiceSelect &&
-                settings.voice
-            ) {
-                voiceSelect.value =
-                    settings.voice;
-            }
-
-            if (
-                speedSelect &&
-                settings.speed
-            ) {
-                speedSelect.value =
-                    settings.speed;
-            }
-
-            if (
-                formatSelect &&
-                settings.format
-            ) {
-                formatSelect.value =
-                    settings.format;
-            }
-
-        } catch (error) {
-            /*
-             Ignore corrupted local settings.
-            */
+            voiceSelect.value =
+                settings.voice;
         }
-    }
 
 
-    if (languageSelect) {
-        languageSelect.addEventListener(
-            "change",
-            saveSettings
-        );
-    }
+        if (
+            speedSelect &&
+            settings.speed
+        ) {
 
-    if (voiceSelect) {
-        voiceSelect.addEventListener(
-            "change",
-            saveSettings
-        );
-    }
-
-    if (speedSelect) {
-        speedSelect.addEventListener(
-            "change",
-            saveSettings
-        );
-    }
-
-    if (formatSelect) {
-        formatSelect.addEventListener(
-            "change",
-            saveSettings
-        );
-    }
+            speedSelect.value =
+                settings.speed;
+        }
 
 
-    /* =========================================================
-       BUTTON EVENTS
-       ========================================================= */
+        if (
+            formatSelect &&
+            settings.format
+        ) {
+
+            formatSelect.value =
+                settings.format;
+        }
+
+    } catch (error) {}
+}
+
+
+/* =========================================================
+   BUTTON EVENTS
+   ========================================================= */
+
+function setupButtonEvents() {
 
     if (clearTextButton) {
+
         clearTextButton.addEventListener(
             "click",
             clearText
@@ -790,6 +1291,7 @@
 
 
     if (copyTextButton) {
+
         copyTextButton.addEventListener(
             "click",
             copyText
@@ -798,6 +1300,7 @@
 
 
     if (generateTextButton) {
+
         generateTextButton.addEventListener(
             "click",
             generateText
@@ -806,6 +1309,7 @@
 
 
     if (improveTextButton) {
+
         improveTextButton.addEventListener(
             "click",
             improveText
@@ -814,6 +1318,7 @@
 
 
     if (imageButton) {
+
         imageButton.addEventListener(
             "click",
             openImageTool
@@ -822,6 +1327,7 @@
 
 
     if (voiceButton) {
+
         voiceButton.addEventListener(
             "click",
             generateVoice
@@ -830,6 +1336,7 @@
 
 
     if (playAudioButton) {
+
         playAudioButton.addEventListener(
             "click",
             playAudio
@@ -838,6 +1345,7 @@
 
 
     if (pauseAudioButton) {
+
         pauseAudioButton.addEventListener(
             "click",
             pauseAudio
@@ -846,6 +1354,7 @@
 
 
     if (stopAudioButton) {
+
         stopAudioButton.addEventListener(
             "click",
             stopAudio
@@ -854,6 +1363,7 @@
 
 
     if (downloadAudioButton) {
+
         downloadAudioButton.addEventListener(
             "click",
             downloadAudio
@@ -862,6 +1372,7 @@
 
 
     if (copyResponseButton) {
+
         copyResponseButton.addEventListener(
             "click",
             copyResponse
@@ -870,132 +1381,243 @@
 
 
     if (useResponseButton) {
+
         useResponseButton.addEventListener(
             "click",
             useResponse
         );
     }
+}
 
 
-    /* =========================================================
-       KEYBOARD SHORTCUTS
-       ========================================================= */
+/* =========================================================
+   SETTINGS EVENTS
+   ========================================================= */
 
-    if (studioText) {
+function setupSettingsEvents() {
 
-        studioText.addEventListener(
-            "keydown",
-            function (event) {
+    if (languageSelect) {
 
-                /*
-                 Ctrl + Enter = Generate Voice
-                */
-
-                if (
-                    event.ctrlKey &&
-                    event.key === "Enter"
-                ) {
-
-                    event.preventDefault();
-
-                    generateVoice();
-                }
-            }
+        languageSelect.addEventListener(
+            "change",
+            saveSettings
         );
     }
 
 
-    /* =========================================================
-       PUBLIC STUDIO API
-       ========================================================= */
+    if (voiceSelect) {
+
+        voiceSelect.addEventListener(
+            "change",
+            saveSettings
+        );
+    }
+
+
+    if (speedSelect) {
+
+        speedSelect.addEventListener(
+            "change",
+            saveSettings
+        );
+    }
+
+
+    if (formatSelect) {
+
+        formatSelect.addEventListener(
+            "change",
+            saveSettings
+        );
+    }
+}
+
+
+/* =========================================================
+   TEXT EVENTS
+   ========================================================= */
+
+function setupTextEvents() {
+
+    if (!studioText) return;
+
+
+    studioText.addEventListener(
+        "input",
+        updateWordCounter
+    );
+
+
+    studioText.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.ctrlKey &&
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                generateVoice();
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   PUBLIC STUDIO API
+   ========================================================= */
+
+function exposePublicAPI() {
 
     window.UrduVoiceStudio = {
 
-        getText: getText,
+        getText:
+            getText,
 
-        setText: setText,
+        setText:
+            setText,
 
-        clearText: clearText,
+        clearText:
+            clearText,
 
-        updateWordCounter: updateWordCounter,
+        updateWordCounter:
+            updateWordCounter,
 
-        generateText: generateText,
+        generateText:
+            generateText,
 
-        improveText: improveText,
+        improveText:
+            improveText,
 
-        generateVoice: generateVoice,
+        generateVoice:
+            generateVoice,
 
-        playAudio: playAudio,
+        playAudio:
+            playAudio,
 
-        pauseAudio: pauseAudio,
+        pauseAudio:
+            pauseAudio,
 
-        stopAudio: stopAudio,
+        stopAudio:
+            stopAudio,
 
-        downloadAudio: downloadAudio
+        downloadAudio:
+            downloadAudio,
+
+        callAI:
+            callAI
     };
+}
 
 
-    /* =========================================================
-       INITIALIZE
-       ========================================================= */
+/* =========================================================
+   INITIALIZE STUDIO
+   ========================================================= */
 
-    function initializeStudio() {
+function initializeStudio() {
 
-        updateWordCounter();
+    /*
+     پہلے DOM elements حاصل کریں۔
+     */
 
-        loadSettings();
+    getElements();
 
-        hideResponse();
 
-        /*
-         Start intro only when the intro element exists.
-        */
+    /*
+     پھر تمام events لگائیں۔
+     */
 
-        if (intro) {
+    setupButtonEvents();
 
-            startStudioIntro();
+    setupSettingsEvents();
 
-            /*
-             Try a very soft intro sound.
-             Browser may block it, which is completely okay.
-            */
+    setupTextEvents();
 
-            setTimeout(function () {
+    setupAudioEvents();
+
+
+    /*
+     Initial state
+     */
+
+    updateWordCounter();
+
+    loadSettings();
+
+    hideResponse();
+
+
+    /*
+     Intro
+     */
+
+    if (intro) {
+
+        startStudioIntro();
+
+
+        setTimeout(
+            function () {
+
                 playIntroSound();
-            }, 500);
-        }
 
-        /*
-         Keep main interface available even if intro
-         fails for any reason.
-        */
-
-        if (!intro && studioMain) {
-
-            studioMain.style.visibility =
-                "visible";
-
-            studioMain.style.opacity =
-                "1";
-        }
-    }
-
-
-    /* =========================================================
-       DOM READY
-       ========================================================= */
-
-    if (document.readyState === "loading") {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeStudio
+            },
+            500
         );
 
-    } else {
+    } else if (studioMain) {
 
-        initializeStudio();
+        studioMain.style.visibility =
+            "visible";
+
+        studioMain.style.opacity =
+            "1";
     }
 
+
+    /*
+     Public API
+     */
+
+    exposePublicAPI();
+
+
+    /*
+     Development diagnostic.
+     Browser Console میں صرف یہ بتائے گا
+     کہ Studio JavaScript load ہوئی ہے۔
+     */
+
+    console.log(
+        "Urdu Voice Studio AI: studio.js loaded successfully."
+    );
+}
+
+
+/* =========================================================
+   DOM READY
+   ========================================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeStudio,
+        {
+            once: true
+        }
+    );
+
+} else {
+
+    initializeStudio();
+}
+```
 
 })();
