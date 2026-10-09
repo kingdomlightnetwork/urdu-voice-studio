@@ -1,8 +1,9 @@
+
 /* =========================================================
    URDU VOICE STUDIO AI
    server.js
-   Secure AI Backend
-   ========================================================= */
+   AI Text + Urdu Text-to-Speech Backend
+========================================================= */
 
 "use strict";
 
@@ -12,9 +13,7 @@ const OpenAI = require("openai");
 
 const app = express();
 
-/* =========================================================
-   SERVER SETTINGS
-   ========================================================= */
+/* ================= SERVER SETTINGS ================= */
 
 const PORT = process.env.PORT || 3000;
 
@@ -22,10 +21,7 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-
-/* =========================================================
-   MIDDLEWARE
-   ========================================================= */
+/* ================= MIDDLEWARE ================= */
 
 app.use(
     cors({
@@ -35,51 +31,51 @@ app.use(
     })
 );
 
-app.use(
-    express.json({
-        limit: "1mb"
-    })
-);
+app.use(express.json({ limit: "1mb" }));
 
+/* ================= MARKDOWN CLEANER ================= */
 
-/* =========================================================
-   BASIC HOME / HEALTH CHECK
-   ========================================================= */
+/* صرف آواز کے لیے متن صاف کریں؛ اصل دکھائی دینے والا متن تبدیل نہیں ہوگا۔ */
+function cleanTextForSpeech(text) {
+    return String(text || "")
+        .replace(/```[\s\S]*?```/g, " ")
+        .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/^\s*#{1,6}\s*/gm, "")
+        .replace(/^\s*>\s?/gm, "")
+        .replace(/^\s*[-*+]\s+/gm, "")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/__(.*?)__/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/_(.*?)_/g, "$1")
+        .replace(/~~(.*?)~~/g, "$1")
+        .replace(/[#*_~`]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+/* ================= HOME / HEALTH CHECK ================= */
 
 app.get("/", function (req, res) {
-
     res.json({
         name: "Urdu Voice Studio AI",
         status: "online",
         message: "Urdu Voice Studio AI backend is running."
     });
-
 });
 
-
-/* =========================================================
-   HEALTH CHECK
-   ========================================================= */
-
 app.get("/api/health", function (req, res) {
-
     res.json({
         ok: true,
         service: "urdu-voice-studio-ai",
         time: new Date().toISOString()
     });
-
 });
 
-
-/* =========================================================
-   AI TEXT ENDPOINT
-   ========================================================= */
+/* ================= AI TEXT ENDPOINT ================= */
 
 app.post("/api/ai", async function (req, res) {
-
     try {
-
         const userText =
             typeof req.body.text === "string"
                 ? req.body.text.trim()
@@ -95,262 +91,226 @@ app.post("/api/ai", async function (req, res) {
                 ? req.body.tool
                 : "text";
 
-
-        /* -----------------------------------------------------
-           VALIDATION
-           ----------------------------------------------------- */
-
         if (!userText) {
-
             return res.status(400).json({
                 ok: false,
                 error: "براہِ کرم پہلے متن یا سوال لکھیں۔"
             });
-
         }
 
-
         if (userText.length > 20000) {
-
             return res.status(400).json({
                 ok: false,
                 error: "متن بہت زیادہ لمبا ہے۔ اسے پہلے کچھ مختصر کریں۔"
             });
-
         }
-
-
-        /* -----------------------------------------------------
-           TOOL INSTRUCTIONS
-           ----------------------------------------------------- */
 
         let instruction = "";
 
-
         switch (tool) {
-
             case "improve":
-
                 instruction =
                     "آپ اردو وائس اسٹوڈیو AI کے متن بہتر کرنے والے معاون ہیں۔ " +
-                    "صارف کے متن کا اصل مطلب برقرار رکھتے ہوئے اسے صاف، " +
-                    "قدرتی، باوقار اور روان پاکستانی اردو میں بہتر کریں۔ " +
-                    "غیر ضروری تبدیلی نہ کریں۔";
-
+                    "اصل مطلب برقرار رکھتے ہوئے متن کو صاف، قدرتی اور رواں پاکستانی اردو میں بہتر کریں۔";
                 break;
-
 
             case "lyrics":
-
                 instruction =
-                    "آپ اردو اور پاکستانی مسیحی گیتوں کے لیے Lyrics معاون ہیں۔ " +
-                    "الفاظ گانے کے قابل، رواں، موزوں اور بامعنی رکھیں۔ " +
-                    "غیر ضروری تکرار سے بچیں۔";
-
+                    "آپ اردو اور پاکستانی مسیحی گیتوں کے معاون ہیں۔ " +
+                    "الفاظ گانے کے قابل، رواں، موزوں اور بامعنی رکھیں۔";
                 break;
-
 
             case "bible":
-
                 instruction =
                     "آپ Bible Study معاون ہیں۔ " +
-                    "صارف کے سوال کا جواب بائبلی حوالوں، تاریخی پس منظر، " +
-                    "لفظی تحقیق اور واضح اردو میں دیں۔ " +
-                    "جہاں یقین نہ ہو وہاں قیاس کو حقیقت کے طور پر پیش نہ کریں۔";
-
+                    "بائبلی حوالوں، تاریخی پس منظر اور لفظی تحقیق کے ساتھ واضح اردو میں جواب دیں۔ " +
+                    "غیر یقینی بات کو حقیقت کے طور پر پیش نہ کریں۔";
                 break;
-
 
             case "script":
-
                 instruction =
-                    "آپ Video Script معاون ہیں۔ " +
-                    "صارف کے موضوع سے واضح، قدرتی اور بولنے کے قابل اردو ویڈیو اسکرپٹ تیار کریں۔";
-
+                    "آپ ویڈیو اسکرپٹ معاون ہیں۔ " +
+                    "واضح، قدرتی اور بولنے کے قابل اردو اسکرپٹ تیار کریں۔";
                 break;
-
 
             case "translate":
-
                 instruction =
-                    "آپ Translation معاون ہیں۔ " +
-                    "صارف کے متن کا درست اور قدرتی ترجمہ کریں۔ " +
-                    "اصل مفہوم، لہجہ اور سیاق برقرار رکھیں۔";
-
+                    "متن کا درست اور قدرتی ترجمہ کریں اور اصل مفہوم برقرار رکھیں۔";
                 break;
-
 
             case "image":
-
                 instruction =
-                    "آپ Image Prompt معاون ہیں۔ " +
-                    "صارف کے خیال کو ایک واضح، خوبصورت اور تفصیلی image-generation prompt میں تبدیل کریں۔";
-
+                    "صارف کے خیال کو واضح اور تفصیلی image-generation prompt میں تبدیل کریں۔";
                 break;
-
 
             case "voice":
-
                 instruction =
-                    "آپ Urdu Voice Studio کے Voice Preparation معاون ہیں۔ " +
-                    "متن کو قدرتی آواز میں پڑھنے کے لیے مناسب punctuation، " +
-                    "وقفوں اور paragraph structure کے ساتھ تیار کریں۔";
-
+                    "متن کو آواز میں پڑھنے کے لیے مناسب وقفوں اور پیراگراف کے ساتھ تیار کریں۔";
                 break;
-
 
             default:
-
                 instruction =
                     "آپ Urdu Voice Studio AI کے مرکزی معاون ہیں۔ " +
-                    "صارف کے سوال یا درخواست کا واضح، مفید اور قدرتی جواب دیں۔";
-
+                    "واضح، مفید اور قدرتی جواب دیں۔";
                 break;
         }
 
-
-        /* -----------------------------------------------------
-           LANGUAGE INSTRUCTION
-           ----------------------------------------------------- */
-
-        let languageInstruction = "";
-
-        if (language === "ur-PK") {
-
-            languageInstruction =
-                "جواب پاکستانی اردو رسم الخط میں دیں۔ " +
-                "ہندی دیوناگری رسم الخط استعمال نہ کریں۔";
-
-        } else {
-
-            languageInstruction =
-                "صارف کی منتخب کردہ زبان کے مطابق جواب دیں۔";
-
-        }
-
-
-        /* -----------------------------------------------------
-           FINAL SYSTEM INSTRUCTION
-           ----------------------------------------------------- */
-
-        const systemInstruction =
-            instruction +
-            "\n\n" +
-            languageInstruction +
-            "\n\n" +
-            "مختصر مگر مکمل جواب دیں۔ " +
-            "غیر ضروری گفتگو نہ کریں۔";
-
-
-        /* -----------------------------------------------------
-           OPENAI RESPONSE
-           ----------------------------------------------------- */
+        const languageInstruction =
+            language === "ur-PK"
+                ? "جواب پاکستانی اردو رسم الخط میں دیں۔ ہندی دیوناگری استعمال نہ کریں۔"
+                : "صارف کی منتخب کردہ زبان میں جواب دیں۔";
 
         const response = await client.responses.create({
-
             model: "gpt-6-luna",
-
-            instructions: systemInstruction,
-
+            instructions:
+                instruction + "\n\n" + languageInstruction +
+                "\n\nمختصر مگر مکمل جواب دیں۔",
             input: userText
-
         });
 
-
-        /* -----------------------------------------------------
-           RESULT
-           ----------------------------------------------------- */
-
-        const output =
-            response.output_text || "";
-
+        const output = response.output_text || "";
 
         if (!output.trim()) {
-
             return res.status(500).json({
                 ok: false,
                 error: "AI سے کوئی جواب موصول نہیں ہوا۔"
             });
-
         }
 
-
         return res.json({
-
             ok: true,
-
             text: output,
-
             language: language,
-
             tool: tool
-
         });
-
 
     } catch (error) {
-
-        console.error(
-            "AI ERROR:",
-            error
-        );
-
+        console.error("AI ERROR:", error);
 
         return res.status(500).json({
-
             ok: false,
+            error: "AI سروس سے رابطہ کرتے وقت مسئلہ پیش آیا۔"
+        });
+    }
+});
 
-            error:
-                "AI سروس سے رابطہ کرتے وقت مسئلہ پیش آیا۔"
+/* ================= TEXT-TO-SPEECH ENDPOINT ================= */
 
+/*
+  ویب سائٹ کے لیے AI آواز بنائیں۔
+  کمپیوٹر کی مقامی SpeechSynthesis آواز استعمال نہیں ہوتی۔
+*/
+
+app.post("/api/tts", async function (req, res) {
+    try {
+        const originalText =
+            typeof req.body.text === "string"
+                ? req.body.text
+                : "";
+
+        const text = cleanTextForSpeech(originalText);
+
+        if (!text) {
+            return res.status(400).json({
+                ok: false,
+                error: "آواز بنانے کے لیے متن موجود نہیں۔"
+            });
+        }
+
+        if (text.length > 4096) {
+            return res.status(400).json({
+                ok: false,
+                error: "اس مرحلے میں آواز کے لیے متن 4096 حروف سے کم ہونا چاہیے۔"
+            });
+        }
+
+        const requestedVoice =
+            typeof req.body.voice === "string"
+                ? req.body.voice
+                : "marin";
+
+        const allowedVoices = [
+            "alloy", "ash", "ballad", "coral",
+            "echo", "fable", "nova", "onyx",
+            "sage", "shimmer", "verse", "marin", "cedar"
+        ];
+
+        const voice = allowedVoices.includes(requestedVoice)
+            ? requestedVoice
+            : "marin";
+
+        const requestedFormat =
+            typeof req.body.format === "string"
+                ? req.body.format.toLowerCase()
+                : "mp3";
+
+        const format = ["mp3", "wav"].includes(requestedFormat)
+            ? requestedFormat
+            : "mp3";
+
+        let speed = Number(req.body.speed);
+
+        if (!Number.isFinite(speed)) speed = 1;
+
+        speed = Math.max(0.25, Math.min(4, speed));
+
+        const speech = await client.audio.speech.create({
+            model: "gpt-4o-mini-tts",
+            voice: voice,
+            input: text,
+            instructions:
+                "Speak the provided text in clear, natural Pakistani Urdu. " +
+                "Use a respectful, warm, steady narration style suitable for Bible study. " +
+                "Pronounce Urdu words carefully, observe punctuation and pauses, " +
+                "and do not speak Markdown symbols or formatting instructions.",
+            response_format: format,
+            speed: speed
         });
 
-    }
+        const audioBuffer = Buffer.from(
+            await speech.arrayBuffer()
+        );
 
+        res.setHeader(
+            "Content-Type",
+            format === "wav" ? "audio/wav" : "audio/mpeg"
+        );
+
+        res.setHeader(
+            "Content-Disposition",
+            'inline; filename="urdu-voice-studio.' + format + '"'
+        );
+
+        res.setHeader("X-Audio-Generated", "AI");
+
+        return res.status(200).send(audioBuffer);
+
+    } catch (error) {
+        console.error("TTS ERROR:", error);
+
+        return res.status(500).json({
+            ok: false,
+            error: "اردو آواز تیار نہیں ہو سکی۔ سرور یا TTS سروس کی خرابی چیک کریں۔"
+        });
+    }
 });
 
-
-/* =========================================================
-   404 HANDLER
-   ========================================================= */
+/* ================= 404 HANDLER ================= */
 
 app.use(function (req, res) {
-
     res.status(404).json({
-
         ok: false,
-
         error: "یہ راستہ موجود نہیں ہے۔"
-
     });
-
 });
 
+/* ================= SERVER START ================= */
 
-/* =========================================================
-   SERVER START
-   ========================================================= */
-
-app.listen(
-    PORT,
-    function () {
-
-        console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "Urdu Voice Studio AI Backend"
-        );
-
-        console.log(
-            "Server running on port:",
-            PORT
-        );
-
-        console.log(
-            "=========================================="
-        );
-
-    }
-);
+app.listen(PORT, function () {
+    console.log("==========================================");
+    console.log("Urdu Voice Studio AI Backend");
+    console.log("Server running on port:", PORT);
+    console.log("AI Text endpoint: /api/ai");
+    console.log("AI Speech endpoint: /api/tts");
+    console.log("==========================================");
+});
