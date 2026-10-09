@@ -1,4 +1,4 @@
-
+````javascript
 /* =========================================================
    URDU VOICE STUDIO AI
    studio.js
@@ -457,6 +457,27 @@ async function openImageTool() {
 
 /* ================= BROWSER TEXT-TO-SPEECH ================= */
 
+/* مارک ڈاؤن علامات ہٹا کر صرف اصل متن آواز کے لیے تیار کریں۔ */
+function cleanTextForSpeech(text) {
+    return String(text || "")
+        .replace(/```[\s\S]*?```/g, " ")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/^\s*#{1,6}\s*/gm, "")
+        .replace(/^\s*>\s?/gm, "")
+        .replace(/^\s*[-*+]\s+/gm, "")
+        .replace(/^\s*\d+\.\s+/gm, "")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/__(.*?)__/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/_(.*?)_/g, "$1")
+        .replace(/~~(.*?)~~/g, "$1")
+        .replace(/[#*_~`]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 function loadVoices() {
     if (!("speechSynthesis" in window)) return;
     availableVoices = window.speechSynthesis.getVoices() || [];
@@ -502,7 +523,7 @@ function chooseVoice(language) {
 }
 
 function generateVoice() {
-    const text = getText();
+    const text = cleanTextForSpeech(getText());
 
     if (!text) {
         setAudioStatus("پہلے متن لکھیں یا AI سے متن تیار کریں۔");
@@ -785,3 +806,4 @@ if (document.readyState === "loading") {
 }
 
 })();
+````
