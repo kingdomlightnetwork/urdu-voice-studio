@@ -1,4 +1,4 @@
-javascript
+
 /* =========================================================
    URDU VOICE STUDIO AI
    studio.js
