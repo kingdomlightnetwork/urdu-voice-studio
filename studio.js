@@ -1,7 +1,9 @@
+
 /* =========================================================
    URDU VOICE STUDIO AI
    studio.js
    AI + Urdu Speech-to-Text + Browser Text-to-Speech
+   Improved Markdown Cleanup + Long Text Chunk Playback
 ========================================================= */
 
 (function () {
@@ -16,6 +18,7 @@ let isListening = false;
 let micBaseText = "";
 let micFinalTranscript = "";
 let micErrorMessage = "";
+
 let intro, studioMain, studioText, wordCounter;
 let generateTextButton, imageButton, improveTextButton, voiceButton;
 let clearTextButton, copyTextButton;
@@ -25,41 +28,59 @@ let copyResponseButton, useResponseButton;
 let audio, playAudioButton, pauseAudioButton, stopAudioButton;
 let downloadAudioButton, audioStatus;
 let startMicButton, stopMicButton, micStatus;
+
 let availableVoices = [];
 let currentSpeechText = "";
 let speechIsPaused = false;
+let speechChunks = [];
+let speechChunkIndex = 0;
+let speechRunId = 0;
+let speechRate = 1;
+let speechVoice = null;
+let speechLanguage = "ur-PK";
+
+/* ================= ELEMENTS ================= */
 
 function getElements() {
     intro = document.getElementById("studioIntro");
     studioMain = document.getElementById("studioMain");
     studioText = document.getElementById("studioText");
     wordCounter = document.getElementById("wordCounter");
+
     generateTextButton = document.getElementById("generateTextButton");
     imageButton = document.getElementById("imageButton");
     improveTextButton = document.getElementById("improveTextButton");
     voiceButton = document.getElementById("voiceButton");
+
     clearTextButton = document.getElementById("clearTextButton");
     copyTextButton = document.getElementById("copyTextButton");
+
     languageSelect = document.getElementById("languageSelect");
     voiceSelect = document.getElementById("voiceSelect");
     speedSelect = document.getElementById("speedSelect");
     formatSelect = document.getElementById("formatSelect");
+
     aiResponseSection = document.getElementById("aiResponseSection");
     aiResponseBox = document.getElementById("aiResponseBox");
     responseEmpty = document.getElementById("responseEmpty");
     responseContent = document.getElementById("responseContent");
+
     copyResponseButton = document.getElementById("copyResponseButton");
     useResponseButton = document.getElementById("useResponseButton");
+
     audio = document.getElementById("studioAudio");
     playAudioButton = document.getElementById("playAudioButton");
     pauseAudioButton = document.getElementById("pauseAudioButton");
     stopAudioButton = document.getElementById("stopAudioButton");
     downloadAudioButton = document.getElementById("downloadAudioButton");
     audioStatus = document.getElementById("audioStatus");
+
     startMicButton = document.getElementById("startMicButton");
     stopMicButton = document.getElementById("stopMicButton");
     micStatus = document.getElementById("micStatus");
 }
+
+/* ================= TEXT HELPERS ================= */
 
 function getText() {
     return studioText ? studioText.value.trim() : "";
@@ -84,6 +105,7 @@ function showMessage(message) {
 function hideResponse() {
     if (aiResponseSection) aiResponseSection.hidden = true;
     if (responseEmpty) responseEmpty.hidden = false;
+
     if (responseContent) {
         responseContent.hidden = true;
         responseContent.textContent = "";
@@ -458,29 +480,48 @@ async function openImageTool() {
     }
 }
 
-/* ================= BROWSER TEXT-TO-SPEECH ================= */
-/* مارک ڈاؤن علامات ہٹا کر صرف اصل متن آواز کے لیے تیار کریں۔ */
+/* ================= TEXT CLEANUP FOR SPEECH ================= */
 
 function cleanTextForSpeech(text) {
-    return String(text || "")
-        .replace(/```[\s\S]*?```/g, " ")
-        .replace(/`([^`]+)`/g, "$1")
-        .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-        .replace(/\\([#*_~`])/g, "$1")
-        .replace(/^[ \t]{0,3}#{1,6}[ \t]*/gm, "")
-        .replace(/^[ \t]{0,3}>[ \t]?/gm, "")
-        .replace(/^[ \t]*[-*+][ \t]+/gm, "")
-        .replace(/^[ \t]*\d+\.[ \t]+/gm, "")
-        .replace(/\*\*([\s\S]*?)\*\*/g, "$1")
-        .replace(/__([\s\S]*?)__/g, "$1")
-        .replace(/\*([\s\S]*?)\*/g, "$1")
-        .replace(/_([\s\S]*?)_/g, "$1")
-        .replace(/~~([\s\S]*?)~~/g, "$1")
-        .replace(/[#*_~`]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
+    let result = String(text || "");
+
+    // Code blocks اور inline code
+    result = result.replace(/```[\s\S]*?```/g, " ");
+    result = result.replace(/`([^`]+)`/g, "$1");
+
+    // Markdown links اور images
+    result = result.replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1");
+    result = result.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+
+    // Escaped Markdown characters
+    result = result.replace(/\\([#*_~`\\])/g, "$1");
+
+    // Headings، quotes اور list markers
+    result = result.replace(/(^|\n)[ \t]*#{1,6}[ \t]*/g, "$1");
+    result = result.replace(/(^|\n)[ \t]*>[ \t]?/g, "$1");
+    result = result.replace(/(^|\n)[ \t]*[-*+][ \t]+/g, "$1");
+    result = result.replace(/(^|\n)[ \t]*\d+[.)][ \t]+/g, "$1");
+
+    // Bold، italic اور strikethrough
+    result = result.replace(/\*\*([\s\S]*?)\*\*/g, "$1");
+    result = result.replace(/__([\s\S]*?)__/g, "$1");
+    result = result.replace(/\*([\s\S]*?)\*/g, "$1");
+    result = result.replace(/_([\s\S]*?)_/g, "$1");
+    result = result.replace(/~~([\s\S]*?)~~/g, "$1");
+
+    // باقی ماندہ Markdown علامات
+    result = result.replace(/[#*_~`]/g, "");
+
+    // غیر ضروری خالی جگہیں کم کریں
+    result = result.replace(/[ \t]+\n/g, "\n");
+    result = result.replace(/\n[ \t]+/g, "\n");
+    result = result.replace(/[ \t]{2,}/g, " ");
+    result = result.replace(/\n{3,}/g, "\n\n");
+
+    return result.trim();
 }
+
+/* ================= SPEECH VOICES ================= */
 
 function loadVoices() {
     if (!("speechSynthesis" in window)) return;
@@ -496,41 +537,172 @@ function getSpeechLanguage() {
 function chooseVoice(language) {
     loadVoices();
 
-    const matching = availableVoices.filter(function (voice) {
+    const normalizedLanguage = language.toLowerCase().replace(/_/g, "-");
+
+    const exactMatches = availableVoices.filter(function (voice) {
         return voice.lang &&
-            voice.lang.toLowerCase().replace("_", "-") ===
-            language.toLowerCase().replace("_", "-");
+            voice.lang.toLowerCase().replace(/_/g, "-") ===
+            normalizedLanguage;
     });
 
-    if (matching.length) {
+    if (exactMatches.length) {
         if (voiceSelect && voiceSelect.value === "female") {
-            return matching.find(function (voice) {
+            return exactMatches.find(function (voice) {
                 return /female|zira|sara|heera|sania/i.test(voice.name);
-            }) || matching[0];
+            }) || exactMatches[0];
         }
 
         if (voiceSelect && voiceSelect.value === "male") {
-            return matching.find(function (voice) {
+            return exactMatches.find(function (voice) {
                 return /male|david|mark/i.test(voice.name);
-            }) || matching[0];
+            }) || exactMatches[0];
         }
 
-        return matching[0];
+        return exactMatches[0];
     }
 
-    const baseLanguage = language.split("-")[0].toLowerCase();
+    const baseLanguage = normalizedLanguage.split("-")[0];
 
-    return availableVoices.find(function (voice) {
+    const sameLanguage = availableVoices.filter(function (voice) {
         return voice.lang &&
-            voice.lang.toLowerCase().startsWith(baseLanguage);
-    }) || null;
+            voice.lang.toLowerCase().replace(/_/g, "-")
+                .startsWith(baseLanguage + "-");
+    });
+
+    if (sameLanguage.length) return sameLanguage[0];
+
+    // کوئی اردو آواز نہ ملے تو انگریزی آواز کو اردو قرار نہ دیں۔
+    return null;
+}
+
+/* ================= LONG TEXT CHUNKING ================= */
+
+/*
+  متن کو تقریباً 250 حروف کے حصوں میں تقسیم کریں۔
+  کوشش کی جاتی ہے کہ تقسیم جملے کے اختتام یا وقفے پر ہو۔
+*/
+
+function splitSpeechText(text, maxLength) {
+    const limit = maxLength || 250;
+    const chunks = [];
+    let remaining = String(text || "").trim();
+
+    while (remaining.length > limit) {
+        let splitAt = -1;
+
+        const windowText = remaining.slice(0, limit + 1);
+
+        // پہلے جملے کے اختتام کی علامت تلاش کریں۔
+        const sentenceEnd = /[۔؟!؛]/g;
+        let match;
+
+        while ((match = sentenceEnd.exec(windowText)) !== null) {
+            if (match.index >= Math.floor(limit * 0.45)) {
+                splitAt = match.index + 1;
+            }
+        }
+
+        // اگر جملہ بہت لمبا ہے تو comma یا space پر تقسیم کریں۔
+        if (splitAt < 0) {
+            const punctuation = /[،,:; \n]/g;
+
+            while ((match = punctuation.exec(windowText)) !== null) {
+                if (match.index >= Math.floor(limit * 0.55)) {
+                    splitAt = match.index + 1;
+                }
+            }
+        }
+
+        // آخری متبادل: مقررہ حد کے قریب تقسیم۔
+        if (splitAt < 1) splitAt = limit;
+
+        const part = remaining.slice(0, splitAt).trim();
+
+        if (part) chunks.push(part);
+
+        remaining = remaining.slice(splitAt).trim();
+    }
+
+    if (remaining) chunks.push(remaining);
+
+    return chunks;
+}
+
+/* ================= SPEECH PLAYBACK ================= */
+
+function finishSpeech(runId) {
+    if (runId !== speechRunId) return;
+
+    speechIsPaused = false;
+    speechChunkIndex = speechChunks.length;
+    setAudioStatus("متن پڑھنے کا عمل مکمل ہو گیا ہے۔");
+}
+
+function speakNextChunk(runId) {
+    if (runId !== speechRunId) return;
+    if (speechIsPaused) return;
+
+    if (!("speechSynthesis" in window)) {
+        setAudioStatus("براؤزر کی آواز کی سہولت دستیاب نہیں۔");
+        return;
+    }
+
+    if (speechChunkIndex >= speechChunks.length) {
+        finishSpeech(runId);
+        return;
+    }
+
+    const part = speechChunks[speechChunkIndex];
+    const utterance = new SpeechSynthesisUtterance(part);
+
+    utterance.lang = speechLanguage;
+    utterance.rate = speechRate;
+
+    if (speechVoice) {
+        utterance.voice = speechVoice;
+    }
+
+    utterance.onstart = function () {
+        if (runId !== speechRunId) return;
+
+        setAudioStatus(
+            "آواز چل رہی ہے۔۔۔ حصہ " +
+            (speechChunkIndex + 1) + " از " + speechChunks.length
+        );
+    };
+
+    utterance.onend = function () {
+        if (runId !== speechRunId) return;
+
+        speechChunkIndex++;
+
+        // اگلا حصہ الگ شروع کریں تاکہ لمبی آواز کی قطار نہ بنے۔
+        window.setTimeout(function () {
+            speakNextChunk(runId);
+        }, 100);
+    };
+
+    utterance.onerror = function (event) {
+        if (runId !== speechRunId) return;
+
+        if (event.error === "canceled" || event.error === "interrupted") {
+            return;
+        }
+
+        speechIsPaused = false;
+        setAudioStatus(
+            "آواز میں مسئلہ آیا: " + (event.error || "نامعلوم مسئلہ")
+        );
+    };
+
+    try {
+        window.speechSynthesis.speak(utterance);
+    } catch (error) {
+        setAudioStatus("آواز شروع نہیں ہو سکی۔ دوبارہ کوشش کریں۔");
+    }
 }
 
 function generateVoice() {
-    /*
-       پہلے اوپر والے متن کو استعمال کریں۔
-       اگر وہ خالی ہو تو AI کے جواب سے آواز بنائیں۔
-    */
     const sourceText = getText() ||
         (responseContent ? responseContent.textContent.trim() : "");
 
@@ -548,52 +720,41 @@ function generateVoice() {
         return;
     }
 
+    // پرانی آواز اور اس کے زیرِ انتظار حصے منسوخ کریں۔
+    speechRunId++;
+    const thisRunId = speechRunId;
+
     window.speechSynthesis.cancel();
 
     currentSpeechText = text;
     speechIsPaused = false;
+    speechChunkIndex = 0;
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    const language = getSpeechLanguage();
+    speechChunks = splitSpeechText(text, 250);
+    speechLanguage = getSpeechLanguage();
 
-    utterance.lang = language;
+    const selectedRate = speedSelect ? Number(speedSelect.value) : 1;
 
-    const chosenVoice = chooseVoice(language);
-
-    if (chosenVoice) {
-        utterance.voice = chosenVoice;
-    }
-
-    const rate = speedSelect ? Number(speedSelect.value) : 1;
-
-    utterance.rate = Number.isFinite(rate)
-        ? Math.max(0.5, Math.min(2, rate))
+    speechRate = Number.isFinite(selectedRate)
+        ? Math.max(0.5, Math.min(2, selectedRate))
         : 1;
 
-    utterance.onstart = function () {
-        setAudioStatus("متن کی آواز چل رہی ہے۔۔۔");
-    };
+    speechVoice = chooseVoice(speechLanguage);
 
-    utterance.onend = function () {
-        speechIsPaused = false;
-        setAudioStatus("متن پڑھنے کا عمل مکمل ہو گیا ہے۔");
-    };
-
-    utterance.onerror = function (event) {
-        speechIsPaused = false;
-
+    if (!speechVoice) {
         setAudioStatus(
-            "آواز چلانے میں مسئلہ آیا: " + (event.error || "نامعلوم مسئلہ")
+            "آپ کے براؤزر میں اس زبان کی مخصوص آواز نہیں ملی۔ دستیاب آواز سے تلفظ مختلف ہو سکتا ہے۔"
         );
-    };
-
-    setAudioStatus("آواز شروع کی جا رہی ہے۔۔۔");
-
-    try {
-        window.speechSynthesis.speak(utterance);
-    } catch (error) {
-        setAudioStatus("آواز شروع نہیں ہو سکی۔ دوبارہ کوشش کریں۔");
+    } else {
+        setAudioStatus("آواز شروع کی جا رہی ہے۔۔۔");
     }
+
+    if (!speechChunks.length) {
+        setAudioStatus("پڑھنے کے لیے متن موجود نہیں۔");
+        return;
+    }
+
+    speakNextChunk(thisRunId);
 }
 
 function playAudio() {
@@ -603,9 +764,17 @@ function playAudio() {
     }
 
     if (speechIsPaused) {
-        window.speechSynthesis.resume();
         speechIsPaused = false;
-        setAudioStatus("آواز دوبارہ چل رہی ہے۔");
+
+        // بعض براؤزر میں pause کے بعد موجودہ حصہ resume ہو جاتا ہے۔
+        if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+            setAudioStatus("آواز دوبارہ چل رہی ہے۔");
+        } else {
+            // اگر موجودہ حصہ ختم ہو چکا ہو تو اگلا حصہ چلائیں۔
+            speakNextChunk(speechRunId);
+        }
+
         return;
     }
 
@@ -614,8 +783,11 @@ function playAudio() {
         return;
     }
 
-    if (currentSpeechText) {
-        generateVoice();
+    if (currentSpeechText && speechChunkIndex < speechChunks.length) {
+        speechRunId++;
+        const runId = speechRunId;
+        window.speechSynthesis.cancel();
+        speakNextChunk(runId);
         return;
     }
 
@@ -627,18 +799,24 @@ function pauseAudio() {
         window.speechSynthesis.speaking) {
         window.speechSynthesis.pause();
         speechIsPaused = true;
-        setAudioStatus("آواز روک دی گئی ہے۔");
+        setAudioStatus("آواز روک دی گئی ہے۔ دوبارہ چلانے کے لیے Play دبائیں۔");
     } else {
         setAudioStatus("اس وقت کوئی آواز نہیں چل رہی۔");
     }
 }
 
 function stopAudio() {
+    // Run ID بدلنے سے پرانے حصوں کے callbacks بے اثر ہو جائیں گے۔
+    speechRunId++;
+
     if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
     }
 
     speechIsPaused = false;
+    speechChunks = [];
+    speechChunkIndex = 0;
+    currentSpeechText = "";
 
     if (audio) {
         try {
@@ -652,7 +830,7 @@ function stopAudio() {
 
 function downloadAudio() {
     setAudioStatus(
-        "براؤزر کی آواز براہِ راست MP3/WAV فائل نہیں بنتی۔ ڈاؤن لوڈ کا نظام الگ سے شامل کرنا ہوگا۔"
+        "براؤزر کی آواز براہِ راست MP3/WAV فائل نہیں بنتی۔ فائل ڈاؤن لوڈ کے لیے الگ آڈیو انجن درکار ہوگا۔"
     );
 }
 
@@ -743,16 +921,33 @@ function setupMicrophoneEvents() {
 function setupButtonEvents() {
     if (clearTextButton) clearTextButton.addEventListener("click", clearText);
     if (copyTextButton) copyTextButton.addEventListener("click", copyText);
-    if (generateTextButton) generateTextButton.addEventListener("click", generateText);
-    if (improveTextButton) improveTextButton.addEventListener("click", improveText);
+
+    if (generateTextButton) {
+        generateTextButton.addEventListener("click", generateText);
+    }
+
+    if (improveTextButton) {
+        improveTextButton.addEventListener("click", improveText);
+    }
+
     if (imageButton) imageButton.addEventListener("click", openImageTool);
     if (voiceButton) voiceButton.addEventListener("click", generateVoice);
+
     if (playAudioButton) playAudioButton.addEventListener("click", playAudio);
     if (pauseAudioButton) pauseAudioButton.addEventListener("click", pauseAudio);
     if (stopAudioButton) stopAudioButton.addEventListener("click", stopAudio);
-    if (downloadAudioButton) downloadAudioButton.addEventListener("click", downloadAudio);
-    if (copyResponseButton) copyResponseButton.addEventListener("click", copyResponse);
-    if (useResponseButton) useResponseButton.addEventListener("click", useResponse);
+
+    if (downloadAudioButton) {
+        downloadAudioButton.addEventListener("click", downloadAudio);
+    }
+
+    if (copyResponseButton) {
+        copyResponseButton.addEventListener("click", copyResponse);
+    }
+
+    if (useResponseButton) {
+        useResponseButton.addEventListener("click", useResponse);
+    }
 }
 
 function setupSettingsEvents() {
@@ -774,6 +969,8 @@ function setupTextEvents() {
     });
 }
 
+/* ================= PUBLIC API ================= */
+
 function exposePublicAPI() {
     window.UrduVoiceStudio = {
         getText: getText,
@@ -792,6 +989,8 @@ function exposePublicAPI() {
         stopMicrophone: stopMicrophone
     };
 }
+
+/* ================= INITIALIZE ================= */
 
 function initializeStudio() {
     getElements();
