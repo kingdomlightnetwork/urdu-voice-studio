@@ -1,4 +1,3 @@
-
 /* =========================================================
    URDU VOICE STUDIO AI
    studio.js
@@ -17,7 +16,6 @@ let isListening = false;
 let micBaseText = "";
 let micFinalTranscript = "";
 let micErrorMessage = "";
-
 let intro, studioMain, studioText, wordCounter;
 let generateTextButton, imageButton, improveTextButton, voiceButton;
 let clearTextButton, copyTextButton;
@@ -27,7 +25,6 @@ let copyResponseButton, useResponseButton;
 let audio, playAudioButton, pauseAudioButton, stopAudioButton;
 let downloadAudioButton, audioStatus;
 let startMicButton, stopMicButton, micStatus;
-
 let availableVoices = [];
 let currentSpeechText = "";
 let speechIsPaused = false;
@@ -37,33 +34,28 @@ function getElements() {
     studioMain = document.getElementById("studioMain");
     studioText = document.getElementById("studioText");
     wordCounter = document.getElementById("wordCounter");
-
     generateTextButton = document.getElementById("generateTextButton");
     imageButton = document.getElementById("imageButton");
     improveTextButton = document.getElementById("improveTextButton");
     voiceButton = document.getElementById("voiceButton");
     clearTextButton = document.getElementById("clearTextButton");
     copyTextButton = document.getElementById("copyTextButton");
-
     languageSelect = document.getElementById("languageSelect");
     voiceSelect = document.getElementById("voiceSelect");
     speedSelect = document.getElementById("speedSelect");
     formatSelect = document.getElementById("formatSelect");
-
     aiResponseSection = document.getElementById("aiResponseSection");
     aiResponseBox = document.getElementById("aiResponseBox");
     responseEmpty = document.getElementById("responseEmpty");
     responseContent = document.getElementById("responseContent");
     copyResponseButton = document.getElementById("copyResponseButton");
     useResponseButton = document.getElementById("useResponseButton");
-
     audio = document.getElementById("studioAudio");
     playAudioButton = document.getElementById("playAudioButton");
     pauseAudioButton = document.getElementById("pauseAudioButton");
     stopAudioButton = document.getElementById("stopAudioButton");
     downloadAudioButton = document.getElementById("downloadAudioButton");
     audioStatus = document.getElementById("audioStatus");
-
     startMicButton = document.getElementById("startMicButton");
     stopMicButton = document.getElementById("stopMicButton");
     micStatus = document.getElementById("micStatus");
@@ -92,7 +84,6 @@ function showMessage(message) {
 function hideResponse() {
     if (aiResponseSection) aiResponseSection.hidden = true;
     if (responseEmpty) responseEmpty.hidden = false;
-
     if (responseContent) {
         responseContent.hidden = true;
         responseContent.textContent = "";
@@ -161,6 +152,7 @@ function updateWordCounter() {
 
     const text = studioText.value.trim();
     const count = text ? text.split(/\s+/).filter(Boolean).length : 0;
+
     wordCounter.textContent = count + " الفاظ";
 }
 
@@ -186,10 +178,12 @@ function startMicrophone() {
 
     try {
         recognition = new RecognitionAPI();
+
         recognition.lang =
             languageSelect && languageSelect.value
                 ? languageSelect.value
                 : "ur-PK";
+
         recognition.continuous = true;
         recognition.interimResults = true;
         recognition.maxAlternatives = 1;
@@ -239,7 +233,8 @@ function startMicrophone() {
             };
 
             micErrorMessage =
-                messages[event.error] || ("مائیکروفون کا مسئلہ: " + event.error);
+                messages[event.error] ||
+                ("مائیکروفون کا مسئلہ: " + event.error);
 
             setMicStatus(micErrorMessage);
         };
@@ -348,6 +343,7 @@ function playIntroSound() {
 
         oscillator.connect(gain);
         gain.connect(context.destination);
+
         oscillator.start();
         oscillator.stop(context.currentTime + 2.2);
 
@@ -365,6 +361,7 @@ function clearText() {
     stopAudio();
     setText("");
     hideResponse();
+
     if (studioText) studioText.focus();
 }
 
@@ -382,6 +379,7 @@ async function copyText() {
     } catch (error) {
         studioText.focus();
         studioText.select();
+
         try {
             document.execCommand("copy");
             showMessage("متن کامیابی سے کاپی ہو گیا ہے۔");
@@ -395,13 +393,16 @@ async function copyText() {
 
 async function generateText() {
     if (isGenerating) return;
+
     isGenerating = true;
     showMessage("AI جواب تیار کر رہا ہے۔۔۔");
 
     try {
         const text = getText() ||
             "پاکستانی اردو میں ایک مختصر اور خوبصورت متن تیار کریں۔";
+
         const data = await callAI("default", text);
+
         showMessage(data.text || "AI نے کوئی متن واپس نہیں کیا۔");
     } catch (error) {
         showMessage("AI سے رابطہ نہیں ہو سکا: " + error.message);
@@ -419,6 +420,7 @@ async function improveText() {
     }
 
     if (isGenerating) return;
+
     isGenerating = true;
     showMessage("متن بہتر کیا جا رہا ہے۔۔۔");
 
@@ -442,6 +444,7 @@ async function openImageTool() {
     }
 
     if (isGenerating) return;
+
     isGenerating = true;
     showMessage("Image AI کی درخواست بھیجی جا رہی ہے۔۔۔");
 
@@ -456,23 +459,24 @@ async function openImageTool() {
 }
 
 /* ================= BROWSER TEXT-TO-SPEECH ================= */
-
 /* مارک ڈاؤن علامات ہٹا کر صرف اصل متن آواز کے لیے تیار کریں۔ */
+
 function cleanTextForSpeech(text) {
     return String(text || "")
         .replace(/```[\s\S]*?```/g, " ")
         .replace(/`([^`]+)`/g, "$1")
         .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
         .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-        .replace(/^\s*#{1,6}\s*/gm, "")
-        .replace(/^\s*>\s?/gm, "")
-        .replace(/^\s*[-*+]\s+/gm, "")
-        .replace(/^\s*\d+\.\s+/gm, "")
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .replace(/__(.*?)__/g, "$1")
-        .replace(/\*(.*?)\*/g, "$1")
-        .replace(/_(.*?)_/g, "$1")
-        .replace(/~~(.*?)~~/g, "$1")
+        .replace(/\\([#*_~`])/g, "$1")
+        .replace(/^[ \t]{0,3}#{1,6}[ \t]*/gm, "")
+        .replace(/^[ \t]{0,3}>[ \t]?/gm, "")
+        .replace(/^[ \t]*[-*+][ \t]+/gm, "")
+        .replace(/^[ \t]*\d+\.[ \t]+/gm, "")
+        .replace(/\*\*([\s\S]*?)\*\*/g, "$1")
+        .replace(/__([\s\S]*?)__/g, "$1")
+        .replace(/\*([\s\S]*?)\*/g, "$1")
+        .replace(/_([\s\S]*?)_/g, "$1")
+        .replace(/~~([\s\S]*?)~~/g, "$1")
         .replace(/[#*_~`]/g, "")
         .replace(/\s+/g, " ")
         .trim();
@@ -523,7 +527,14 @@ function chooseVoice(language) {
 }
 
 function generateVoice() {
-    const text = cleanTextForSpeech(getText());
+    /*
+       پہلے اوپر والے متن کو استعمال کریں۔
+       اگر وہ خالی ہو تو AI کے جواب سے آواز بنائیں۔
+    */
+    const sourceText = getText() ||
+        (responseContent ? responseContent.textContent.trim() : "");
+
+    const text = cleanTextForSpeech(sourceText);
 
     if (!text) {
         setAudioStatus("پہلے متن لکھیں یا AI سے متن تیار کریں۔");
@@ -544,14 +555,17 @@ function generateVoice() {
 
     const utterance = new SpeechSynthesisUtterance(text);
     const language = getSpeechLanguage();
+
     utterance.lang = language;
 
     const chosenVoice = chooseVoice(language);
+
     if (chosenVoice) {
         utterance.voice = chosenVoice;
     }
 
     const rate = speedSelect ? Number(speedSelect.value) : 1;
+
     utterance.rate = Number.isFinite(rate)
         ? Math.max(0.5, Math.min(2, rate))
         : 1;
@@ -567,6 +581,7 @@ function generateVoice() {
 
     utterance.onerror = function (event) {
         speechIsPaused = false;
+
         setAudioStatus(
             "آواز چلانے میں مسئلہ آیا: " + (event.error || "نامعلوم مسئلہ")
         );
@@ -645,6 +660,7 @@ function downloadAudio() {
 
 async function copyResponse() {
     if (!responseContent) return;
+
     const text = responseContent.textContent.trim();
     if (!text) return;
 
@@ -658,11 +674,14 @@ async function copyResponse() {
 
 function useResponse() {
     if (!responseContent) return;
+
     const text = responseContent.textContent.trim();
     if (!text) return;
 
     setText(text);
+
     if (studioText) studioText.focus();
+
     setAudioStatus("AI جواب متن والے خانے میں منتقل ہو گیا ہے۔");
 }
 
@@ -692,12 +711,15 @@ function loadSettings() {
         if (languageSelect && settings.language) {
             languageSelect.value = settings.language;
         }
+
         if (voiceSelect && settings.voice) {
             voiceSelect.value = settings.voice;
         }
+
         if (speedSelect && settings.speed) {
             speedSelect.value = settings.speed;
         }
+
         if (formatSelect && settings.format) {
             formatSelect.value = settings.format;
         }
@@ -710,9 +732,11 @@ function setupMicrophoneEvents() {
     if (startMicButton) {
         startMicButton.addEventListener("click", startMicrophone);
     }
+
     if (stopMicButton) {
         stopMicButton.addEventListener("click", stopMicrophone);
     }
+
     updateMicButtons();
 }
 
@@ -806,4 +830,3 @@ if (document.readyState === "loading") {
 }
 
 })();
-````
