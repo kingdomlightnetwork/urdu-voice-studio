@@ -1,13 +1,14 @@
+
 /* =========================================================
    URDU VOICE STUDIO AI — studio.js
-   Plain Urdu text + long-text speech playback
+   AI Urdu TTS + Text Tools + Microphone
 ========================================================= */
 (function () {
   "use strict";
 
   const API_BASE_URL = "http://localhost:3000";
   const AI_ENDPOINT = API_BASE_URL + "/api/ai";
-  const VOICE_ENDPOINT = API_BASE_URL + "/api/voice";
+  const VOICE_ENDPOINT = API_BASE_URL + "/api/tts";
 
   let isGenerating = false;
   let recognition = null;
@@ -27,7 +28,6 @@
   let startMicButton, stopMicButton, micStatus;
 
   let availableVoices = [];
-  let currentSpeechText = "";
   let speechIsPaused = false;
   let speechChunks = [];
   let speechChunkIndex = 0;
@@ -124,9 +124,7 @@
     try {
       response = await fetch(AI_ENDPOINT, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tool: tool || "default",
           text: cleanText,
@@ -137,7 +135,7 @@
       });
     } catch (_) {
       throw new Error(
-        "Backend سے رابطہ نہیں ہو سکا۔ چیک کریں کہ سرور چل رہا ہے۔"
+        "Backend سے رابطہ نہیں ہو سکا۔ سرور چلنے کی تصدیق کریں۔"
       );
     }
 
@@ -236,7 +234,7 @@
           "no-speech": "کوئی آواز سنائی نہیں دی۔",
           "audio-capture": "مائیکروفون نہیں ملا۔",
           "not-allowed": "براہِ کرم مائیکروفون کی اجازت دیں۔",
-          "network": "آواز پہچاننے کے لیے نیٹ ورک کا مسئلہ آیا۔",
+          "network": "آواز پہچاننے میں نیٹ ورک کا مسئلہ آیا۔",
           "language-not-supported": "یہ زبان دستیاب نہیں۔"
         };
 
@@ -335,18 +333,15 @@
       oscillator.type = "sine";
       oscillator.frequency.setValueAtTime(392, context.currentTime);
       oscillator.frequency.exponentialRampToValueAtTime(
-        523.25,
-        context.currentTime + 1.8
+        523.25, context.currentTime + 1.8
       );
 
       gain.gain.setValueAtTime(0.0001, context.currentTime);
       gain.gain.exponentialRampToValueAtTime(
-        0.035,
-        context.currentTime + 0.35
+        0.035, context.currentTime + 0.35
       );
       gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        context.currentTime + 2.1
+        0.0001, context.currentTime + 2.1
       );
 
       oscillator.connect(gain);
@@ -367,7 +362,6 @@
     stopAudio();
     setText("");
     hideResponse();
-
     if (studioText) studioText.focus();
   }
 
@@ -464,7 +458,7 @@
     }
   }
 
-  /* ---------------- TEXT CLEANUP FOR SPEECH ---------------- */
+  /* ---------------- TEXT CLEANUP ---------------- */
 
   function cleanTextForSpeech(text) {
     return String(text || "")
@@ -579,7 +573,6 @@
 
           while (remaining.length > max) {
             let cut = remaining.lastIndexOf(" ", max);
-
             if (cut < Math.floor(max * 0.55)) cut = max;
 
             chunks.push(remaining.slice(0, cut).trim());
@@ -605,53 +598,97 @@
     usingGeneratedAudio = false;
   }
 
+  /* ---------------- AI TEXT-TO-SPEECH ---------------- */
+
   async function tryGenerateServerAudio(text, runId) {
+    const selectedVoice = voiceSelect
+      ? String(voiceSelect.value || "")
+      : "marin";
+
+    const allowedVoices = [
+      "alloy", "ash", "ballad", "coral", "echo",
+      "fable", "nova", "onyx", "sage", "shimmer",
+      "verse", "marin", "cedar"
+    ];
+
+    const voice = allowedVoices.includes(selectedVoice)
+      ? selectedVoice
+      : "marin";
+
+    const selectedFormat = formatSelect
+      ? String(formatSelect.value || "mp3").toLowerCase()
+      : "mp3";
+
+    const format = ["mp3", "wav"].includes(selectedFormat)
+      ? selectedFormat
+      : "mp3";
+
     const response = await fetch(VOICE_ENDPOINT, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text: text,
         language: getSpeechLanguage(),
-        voice: voiceSelect ? voiceSelect.value : "default",
-        speed: speedSelect ? Number(speedSelect.value) || 1 : 1
+        voice: voice,
+        speed: speedSelect ? Number(speedSelect.value) || 1 : 1,
+        format: format
       })
     });
 
+    if (runId !== speechRunId) return false;
+
     if (!response.ok) {
-      throw new Error("AI audio endpoint دستیاب نہیں۔");
+      let message = "AI آواز تیار نہیں ہو سکی۔";
+
+      try {
+        const data = await response.json();
+        if (data && data.error) message = data.error;
+      } catch (_) {}
+
+      throw new Error(message);
     }
 
     const type = response.headers.get("content-type") || "";
 
-    if (!type.startsWith("audio/")) {
-      throw new Error("Backend نے آڈیو فائل کے بجائے دوسرا جواب دیا۔");
+    if (!type.toLowerCase().startsWith("audio/")) {
+      throw new Error("سرور نے آڈیو فائل کے بجائے دوسرا جواب دیا۔");
     }
 
-    if (runId !== speechRunId) return false;
-
     const blob = await response.blob();
+
+    if (runId !== speechRunId) return false;
 
     revokeGeneratedAudio();
     generatedAudioUrl = URL.createObjectURL(blob);
     usingGeneratedAudio = true;
 
-    if (!audio) throw new Error("آڈیو پلیئر موجود نہیں۔");
+    if (!audio) {
+      throw new Error(
+        "HTML میں studioAudio آڈیو پلیئر موجود نہیں ہے۔"
+      );
+    }
 
     audio.src = generatedAudioUrl;
+    audio.load();
+
     audio.onended = function () {
-      setAudioStatus("اردو آواز مکمل ہو گئی ہے۔");
+      setAudioStatus("AI سے تیار کردہ اردو آواز مکمل ہو گئی ہے۔");
     };
+
     audio.onerror = function () {
-      setAudioStatus("آڈیو چلانے میں مسئلہ آیا۔");
+      setAudioStatus("آڈیو پلیئر آڈیو فائل نہیں چلا سکا۔");
     };
 
     await audio.play();
-    setAudioStatus("AI سے تیار کردہ اردو آواز چل رہی ہے۔۔۔");
+
+    if (runId === speechRunId) {
+      setAudioStatus("AI سے تیار کردہ اردو آواز چل رہی ہے۔۔۔");
+    }
 
     return true;
   }
+
+  /* ---------------- BROWSER SPEECH FALLBACK ---------------- */
 
   function speakNextChunk(runId) {
     if (runId !== speechRunId) return;
@@ -684,7 +721,7 @@
     utterance.onstart = function () {
       if (runId === speechRunId) {
         setAudioStatus(
-          "آواز چل رہی ہے۔۔۔ حصہ " +
+          "براؤزر کی آواز چل رہی ہے۔۔۔ حصہ " +
           (speechChunkIndex + 1) +
           " از " +
           speechChunks.length
@@ -699,7 +736,7 @@
 
       setTimeout(function () {
         speakNextChunk(runId);
-      }, 120);
+      }, 150);
     };
 
     utterance.onerror = function (event) {
@@ -708,9 +745,9 @@
       speechIsPaused = false;
 
       setAudioStatus(
-        "براؤزر کی آواز نہیں چل سکی (" +
+        "براؤزر کی آواز ناکام ہوئی: " +
         (event.error || "نامعلوم مسئلہ") +
-        ")۔ اگر اردو آواز نصب نہیں تو Backend میں AI audio بھی فعال کرنا ہوگا۔"
+        "۔ AI آواز کے لیے سرور کی جانچ ضروری ہے۔"
       );
     };
 
@@ -730,21 +767,15 @@
       return;
     }
 
-    if (
-      !("speechSynthesis" in window) ||
-      !("SpeechSynthesisUtterance" in window)
-    ) {
-      setAudioStatus(
-        "اس براؤزر میں آواز پڑھنے کی سہولت دستیاب نہیں۔ Chrome استعمال کریں۔"
-      );
-      return;
-    }
-
     const runId = ++speechRunId;
 
-    try {
-      window.speechSynthesis.cancel();
-    } catch (_) {}
+    setAudioStatus("AI اردو آواز تیار کی جا رہی ہے۔۔۔");
+
+    if ("speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (_) {}
+    }
 
     if (audio) {
       try {
@@ -755,35 +786,47 @@
 
     revokeGeneratedAudio();
 
-    currentSpeechText = text;
     speechChunks = splitSpeechText(text, 230);
     speechChunkIndex = 0;
     speechIsPaused = false;
 
-    setAudioStatus("اردو آواز تیار کی جا رہی ہے۔۔۔");
-
+    // پہلے حقیقی AI آڈیو کی کوشش کریں۔
     try {
       const played = await tryGenerateServerAudio(text, runId);
-
       if (played || runId !== speechRunId) return;
-    } catch (_) {
-      // اگر /api/voice موجود نہ ہو تو براؤزر کی آواز استعمال ہوگی۔
+    } catch (error) {
+      console.warn("AI TTS ERROR:", error);
+
+      if (runId !== speechRunId) return;
+
+      setAudioStatus(
+        "AI آڈیو دستیاب نہیں: " +
+        error.message +
+        "۔ براؤزر کی آواز کی کوشش کی جا رہی ہے۔۔۔"
+      );
     }
 
     if (runId !== speechRunId) return;
+
+    if (
+      !("speechSynthesis" in window) ||
+      !("SpeechSynthesisUtterance" in window)
+    ) {
+      setAudioStatus(
+        "براؤزر کی آواز دستیاب نہیں۔ AI آواز کے لیے سرور درست ہونا ضروری ہے۔"
+      );
+      return;
+    }
 
     loadVoices();
 
     if (!availableVoices.length) {
       setAudioStatus(
-        "براؤزر کی آوازیں دستیاب نہیں ہوئیں۔ Chrome کی آواز کی سہولت چیک کریں۔"
+        "AI آڈیو دستیاب نہیں اور براؤزر کی آوازیں بھی نہیں ملیں۔ سرور اور Chrome کی آواز کی سہولت چیک کریں۔"
       );
       return;
     }
 
-    setAudioStatus("براؤزر کی آواز شروع کی جا رہی ہے۔۔۔");
-
-    // Chrome sometimes discards speech immediately after cancel().
     setTimeout(function () {
       if (runId === speechRunId) speakNextChunk(runId);
     }, 180);
@@ -793,7 +836,7 @@
     if (usingGeneratedAudio && audio) {
       audio.play()
         .then(function () {
-          setAudioStatus("اردو آواز چل رہی ہے۔۔۔");
+          setAudioStatus("AI اردو آواز چل رہی ہے۔۔۔");
         })
         .catch(function () {
           setAudioStatus("آواز چلانے کے لیے Play دوبارہ دبائیں۔");
@@ -802,19 +845,20 @@
       return;
     }
 
-    if (!("speechSynthesis" in window)) {
-      setAudioStatus("براؤزر کی آواز کی سہولت دستیاب نہیں۔");
-      return;
-    }
-
-    if (speechIsPaused) {
+    if (
+      "speechSynthesis" in window &&
+      speechIsPaused
+    ) {
       window.speechSynthesis.resume();
       speechIsPaused = false;
       setAudioStatus("آواز دوبارہ چل رہی ہے۔");
       return;
     }
 
-    if (window.speechSynthesis.speaking) {
+    if (
+      "speechSynthesis" in window &&
+      window.speechSynthesis.speaking
+    ) {
       setAudioStatus("آواز پہلے ہی چل رہی ہے۔");
       return;
     }
@@ -865,10 +909,13 @@
       const link = document.createElement("a");
       link.href = generatedAudioUrl;
 
-      link.download =
-        formatSelect && formatSelect.value === "wav"
-          ? "urdu-voice.wav"
-          : "urdu-voice.mp3";
+      const format = formatSelect
+        ? String(formatSelect.value || "mp3").toLowerCase()
+        : "mp3";
+
+      link.download = format === "wav"
+        ? "urdu-voice.wav"
+        : "urdu-voice.mp3";
 
       document.body.appendChild(link);
       link.click();
@@ -879,7 +926,7 @@
     }
 
     setAudioStatus(
-      "ابھی براؤزر کی آواز چل رہی ہے، یہ MP3/WAV فائل نہیں ہے۔ حقیقی ڈاؤن لوڈ کے لیے Backend میں AI audio endpoint شامل کرنا ضروری ہے۔"
+      "ابھی ڈاؤن لوڈ کے لیے AI آڈیو دستیاب نہیں۔ پہلے AI آواز کامیابی سے تیار ہونی چاہیے۔"
     );
   }
 
@@ -920,7 +967,7 @@
         "urduVoiceStudioStudioSettings",
         JSON.stringify({
           language: languageSelect ? languageSelect.value : "ur-PK",
-          voice: voiceSelect ? voiceSelect.value : "default",
+          voice: voiceSelect ? voiceSelect.value : "marin",
           speed: speedSelect ? speedSelect.value : "1",
           format: formatSelect ? formatSelect.value : "mp3"
         })
