@@ -12,9 +12,6 @@ const cors = require("cors");
 const OpenAI = require("openai");
 
 const app = express();
-
-/* ================= SERVER SETTINGS ================= */
-
 const PORT = process.env.PORT || 3000;
 
 const client = new OpenAI({
@@ -23,19 +20,16 @@ const client = new OpenAI({
 
 /* ================= MIDDLEWARE ================= */
 
-app.use(
-    cors({
-        origin: true,
-        methods: ["GET", "POST"],
-        allowedHeaders: ["Content-Type"]
-    })
-);
+app.use(cors({
+    origin: true,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"]
+}));
 
 app.use(express.json({ limit: "1mb" }));
 
-/* ================= MARKDOWN CLEANER ================= */
+/* ================= TEXT CLEANER ================= */
 
-/* صرف آواز کے لیے متن صاف کریں؛ اصل دکھائی دینے والا متن تبدیل نہیں ہوگا۔ */
 function cleanTextForSpeech(text) {
     return String(text || "")
         .replace(/```[\s\S]*?```/g, " ")
@@ -54,7 +48,7 @@ function cleanTextForSpeech(text) {
         .trim();
 }
 
-/* ================= HOME / HEALTH CHECK ================= */
+/* ================= HOME ================= */
 
 app.get("/", function (req, res) {
     res.json({
@@ -63,6 +57,8 @@ app.get("/", function (req, res) {
         message: "Urdu Voice Studio AI backend is running."
     });
 });
+
+/* ================= HEALTH CHECK ================= */
 
 app.get("/api/health", function (req, res) {
     res.json({
@@ -101,7 +97,7 @@ app.post("/api/ai", async function (req, res) {
         if (userText.length > 20000) {
             return res.status(400).json({
                 ok: false,
-                error: "متن بہت زیادہ لمبا ہے۔ اسے پہلے کچھ مختصر کریں۔"
+                error: "متن بہت زیادہ لمبا ہے۔ اسے مختصر کریں۔"
             });
         }
 
@@ -110,61 +106,60 @@ app.post("/api/ai", async function (req, res) {
         switch (tool) {
             case "improve":
                 instruction =
-                    "آپ اردو وائس اسٹوڈیو AI کے متن بہتر کرنے والے معاون ہیں۔ " +
-                    "اصل مطلب برقرار رکھتے ہوئے متن کو صاف، قدرتی اور رواں پاکستانی اردو میں بہتر کریں۔";
+                    "Improve the text while preserving its original meaning. " +
+                    "Use clear, natural Pakistani Urdu when the input is Urdu.";
                 break;
 
             case "lyrics":
                 instruction =
-                    "آپ اردو اور پاکستانی مسیحی گیتوں کے معاون ہیں۔ " +
-                    "الفاظ گانے کے قابل، رواں، موزوں اور بامعنی رکھیں۔";
+                    "Help write meaningful, singable Pakistani Urdu and Christian lyrics. " +
+                    "Keep the rhythm natural and the wording clear.";
                 break;
 
             case "bible":
                 instruction =
-                    "آپ Bible Study معاون ہیں۔ " +
-                    "بائبلی حوالوں، تاریخی پس منظر اور لفظی تحقیق کے ساتھ واضح اردو میں جواب دیں۔ " +
-                    "غیر یقینی بات کو حقیقت کے طور پر پیش نہ کریں۔";
+                    "You are a Bible study assistant. Explain references clearly, " +
+                    "include historical context where relevant, and distinguish facts from uncertainty.";
                 break;
 
             case "script":
                 instruction =
-                    "آپ ویڈیو اسکرپٹ معاون ہیں۔ " +
-                    "واضح، قدرتی اور بولنے کے قابل اردو اسکرپٹ تیار کریں۔";
+                    "Prepare a clear, natural, speakable script in the user's language.";
                 break;
 
             case "translate":
                 instruction =
-                    "متن کا درست اور قدرتی ترجمہ کریں اور اصل مفہوم برقرار رکھیں۔";
+                    "Translate accurately into the requested language and preserve the meaning.";
                 break;
 
             case "image":
                 instruction =
-                    "صارف کے خیال کو واضح اور تفصیلی image-generation prompt میں تبدیل کریں۔";
+                    "Turn the user's idea into a clear, detailed image-generation prompt.";
                 break;
 
             case "voice":
                 instruction =
-                    "متن کو آواز میں پڑھنے کے لیے مناسب وقفوں اور پیراگراف کے ساتھ تیار کریں۔";
+                    "Prepare the text for spoken narration with natural punctuation and pauses.";
                 break;
 
             default:
                 instruction =
-                    "آپ Urdu Voice Studio AI کے مرکزی معاون ہیں۔ " +
-                    "واضح، مفید اور قدرتی جواب دیں۔";
+                    "You are the Urdu Voice Studio AI assistant. " +
+                    "Give a clear and helpful answer in the requested language.";
                 break;
         }
 
         const languageInstruction =
             language === "ur-PK"
-                ? "جواب پاکستانی اردو رسم الخط میں دیں۔ ہندی دیوناگری استعمال نہ کریں۔"
-                : "صارف کی منتخب کردہ زبان میں جواب دیں۔";
+                ? "Write in Pakistani Urdu script. Do not use Devanagari."
+                : "Use the language selected by the user.";
 
         const response = await client.responses.create({
             model: "gpt-6-luna",
             instructions:
-                instruction + "\n\n" + languageInstruction +
-                "\n\nمختصر مگر مکمل جواب دیں۔",
+                instruction + "\n\n" +
+                languageInstruction + "\n\n" +
+                "Give a concise but complete answer.",
             input: userText
         });
 
@@ -196,11 +191,6 @@ app.post("/api/ai", async function (req, res) {
 
 /* ================= TEXT-TO-SPEECH ENDPOINT ================= */
 
-/*
-  ویب سائٹ کے لیے AI آواز بنائیں۔
-  کمپیوٹر کی مقامی SpeechSynthesis آواز استعمال نہیں ہوتی۔
-*/
-
 app.post("/api/tts", async function (req, res) {
     try {
         const originalText =
@@ -220,7 +210,7 @@ app.post("/api/tts", async function (req, res) {
         if (text.length > 4096) {
             return res.status(400).json({
                 ok: false,
-                error: "اس مرحلے میں آواز کے لیے متن 4096 حروف سے کم ہونا چاہیے۔"
+                error: "آواز کے لیے متن 4096 حروف سے کم ہونا چاہیے۔"
             });
         }
 
@@ -250,7 +240,9 @@ app.post("/api/tts", async function (req, res) {
 
         let speed = Number(req.body.speed);
 
-        if (!Number.isFinite(speed)) speed = 1;
+        if (!Number.isFinite(speed)) {
+            speed = 1;
+        }
 
         speed = Math.max(0.25, Math.min(4, speed));
 
@@ -259,10 +251,13 @@ app.post("/api/tts", async function (req, res) {
             voice: voice,
             input: text,
             instructions:
-                "Speak the provided text in clear, natural Pakistani Urdu. " +
-                "Use a respectful, warm, steady narration style suitable for Bible study. " +
-                "Pronounce Urdu words carefully, observe punctuation and pauses, " +
-                "and do not speak Markdown symbols or formatting instructions.",
+                "The input is Pakistani Urdu written in Urdu script. " +
+                "Speak the text in Urdu, not English and not Hindi. " +
+                "Use natural Pakistani Urdu pronunciation and carefully pronounce " +
+                "the Urdu consonants and vowels. Read the text as written. " +
+                "Do not translate, transliterate, or paraphrase it. " +
+                "Use a warm, clear, respectful narration style suitable for Bible study. " +
+                "Follow punctuation and natural pauses. Do not read Markdown symbols aloud.",
             response_format: format,
             speed: speed
         });
