@@ -1,45 +1,62 @@
 
 /* =========================================================
-   URDU VOICE STUDIO AI — studio.js
-   Free Browser Speech + Text Tools + Microphone
+   URDU VOICE STUDIO AI
+   Local Piper TTS + Audio Player + WAV Download
 ========================================================= */
+
 (function () {
   "use strict";
 
+  const TTS_ENDPOINT = "/api/tts";
+  const AI_ENDPOINT = "/api/ai";
+
+  let studioText;
+  let wordCounter;
+  let voiceButton;
+  let playAudioButton;
+  let pauseAudioButton;
+  let stopAudioButton;
+  let downloadAudioButton;
+  let audio;
+  let audioStatus;
+  let languageSelect;
+  let voiceSelect;
+  let speedSelect;
+  let formatSelect;
+  let aiResponseSection;
+  let responseEmpty;
+  let responseContent;
+  let copyResponseButton;
+  let useResponseButton;
+  let clearTextButton;
+  let copyTextButton;
+  let generateTextButton;
+  let improveTextButton;
+  let imageButton;
+  let startMicButton;
+  let stopMicButton;
+  let micStatus;
+  let intro;
+  let studioMain;
+
+  let generatedBlob = null;
+  let generatedUrl = null;
+  let isGenerating = false;
   let recognition = null;
   let isListening = false;
-  let micBaseText = "";
-  let micFinalTranscript = "";
-  let micErrorMessage = "";
-
-  let intro, studioMain, studioText, wordCounter;
-  let generateTextButton, imageButton, improveTextButton, voiceButton;
-  let clearTextButton, copyTextButton;
-  let languageSelect, voiceSelect, speedSelect, formatSelect;
-  let aiResponseSection, responseEmpty, responseContent;
-  let copyResponseButton, useResponseButton;
-  let playAudioButton, pauseAudioButton, stopAudioButton;
-  let downloadAudioButton, audioStatus;
-  let startMicButton, stopMicButton, micStatus;
-
-  let availableVoices = [];
-  let speechIsPaused = false;
-  let speechChunks = [];
-  let speechChunkIndex = 0;
-  let speechRunId = 0;
+  let requestNumber = 0;
 
   function getElements() {
-    intro = document.getElementById("studioIntro");
-    studioMain = document.getElementById("studioMain");
     studioText = document.getElementById("studioText");
     wordCounter = document.getElementById("wordCounter");
 
-    generateTextButton = document.getElementById("generateTextButton");
-    imageButton = document.getElementById("imageButton");
-    improveTextButton = document.getElementById("improveTextButton");
     voiceButton = document.getElementById("voiceButton");
-    clearTextButton = document.getElementById("clearTextButton");
-    copyTextButton = document.getElementById("copyTextButton");
+    playAudioButton = document.getElementById("playAudioButton");
+    pauseAudioButton = document.getElementById("pauseAudioButton");
+    stopAudioButton = document.getElementById("stopAudioButton");
+    downloadAudioButton = document.getElementById("downloadAudioButton");
+    audio = document.getElementById("studioAudio");
+    audioStatus = document.getElementById("audioStatus");
 
     languageSelect = document.getElementById("languageSelect");
     voiceSelect = document.getElementById("voiceSelect");
@@ -52,44 +69,28 @@
 
     copyResponseButton = document.getElementById("copyResponseButton");
     useResponseButton = document.getElementById("useResponseButton");
-
-    playAudioButton = document.getElementById("playAudioButton");
-    pauseAudioButton = document.getElementById("pauseAudioButton");
-    stopAudioButton = document.getElementById("stopAudioButton");
-    downloadAudioButton = document.getElementById("downloadAudioButton");
-    audioStatus = document.getElementById("audioStatus");
+    clearTextButton = document.getElementById("clearTextButton");
+    copyTextButton = document.getElementById("copyTextButton");
+    generateTextButton = document.getElementById("generateTextButton");
+    improveTextButton = document.getElementById("improveTextButton");
+    imageButton = document.getElementById("imageButton");
 
     startMicButton = document.getElementById("startMicButton");
     stopMicButton = document.getElementById("stopMicButton");
     micStatus = document.getElementById("micStatus");
+
+    intro = document.getElementById("studioIntro");
+    studioMain = document.getElementById("studioMain");
   }
 
   function getText() {
     return studioText ? studioText.value.trim() : "";
   }
 
-  function setText(text) {
+  function setText(value) {
     if (!studioText) return;
-    studioText.value = text || "";
+    studioText.value = value || "";
     updateWordCounter();
-  }
-
-  function showMessage(message) {
-    if (aiResponseSection) aiResponseSection.hidden = false;
-    if (responseEmpty) responseEmpty.hidden = true;
-    if (responseContent) {
-      responseContent.hidden = false;
-      responseContent.textContent = message || "";
-    }
-  }
-
-  function hideResponse() {
-    if (aiResponseSection) aiResponseSection.hidden = true;
-    if (responseEmpty) responseEmpty.hidden = false;
-    if (responseContent) {
-      responseContent.hidden = true;
-      responseContent.textContent = "";
-    }
   }
 
   function setAudioStatus(message) {
@@ -102,133 +103,504 @@
 
   function updateWordCounter() {
     if (!studioText || !wordCounter) return;
+
     const text = studioText.value.trim();
-    const count = text ? text.split(/\s+/).filter(Boolean).length : 0;
+    const count = text
+      ? text.split(/\s+/).filter(Boolean).length
+      : 0;
+
     wordCounter.textContent = count + " الفاظ";
   }
 
-  function getSpeechLanguage() {
-    return languageSelect && languageSelect.value
-      ? languageSelect.value
-      : "ur-PK";
+  function showMessage(message) {
+    if (aiResponseSection) aiResponseSection.hidden = false;
+    if (responseEmpty) responseEmpty.hidden = true;
+
+    if (responseContent) {
+      responseContent.hidden = false;
+      responseContent.textContent = message || "";
+    }
   }
 
-  /* ---------------- MICROPHONE ---------------- */
+  function hideResponse() {
+    if (aiResponseSection) aiResponseSection.hidden = true;
+    if (responseEmpty) responseEmpty.hidden = false;
 
-  function updateMicButtons() {
-    if (startMicButton) startMicButton.disabled = isListening;
-    if (stopMicButton) stopMicButton.disabled = !isListening;
+    if (responseContent) {
+      responseContent.hidden = true;
+      responseContent.textContent = "";
+    }
   }
 
-  function startMicrophone() {
-    if (!studioText || isListening) return;
+  function cleanTextForSpeech(text) {
+    return String(text || "")
+      .replace(/```[\s\S]*?```/g, " ")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/^\s*#{1,6}\s*/gm, "")
+      .replace(/^\s*>\s?/gm, "")
+      .replace(/^\s*[-*+]\s+/gm, "")
+      .replace(/^\s*\d+\.\s+/gm, "")
+      .replace(/\*\*(.*?)\*\*/gs, "$1")
+      .replace(/__(.*?)__/gs, "$1")
+      .replace(/\*(.*?)\*/gs, "$1")
+      .replace(/_(.*?)_/gs, "$1")
+      .replace(/~~(.*?)~~/gs, "$1")
+      .replace(/[ \t]+/g, " ")
+      .trim();
+  }
 
-    const RecognitionAPI =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+  function revokeGeneratedAudio() {
+    if (generatedUrl) {
+      URL.revokeObjectURL(generatedUrl);
+      generatedUrl = null;
+    }
 
-    if (!RecognitionAPI) {
-      setMicStatus(
-        "اس براؤزر میں آواز سے متن لکھنے کی سہولت دستیاب نہیں۔ Chrome استعمال کریں۔"
+    generatedBlob = null;
+  }
+
+  /* ---------------- PIPER TEXT TO SPEECH ---------------- */
+
+  async function generateVoice() {
+    if (isGenerating) return;
+
+    const text = cleanTextForSpeech(getText());
+
+    if (!text) {
+      setAudioStatus("پہلے متن لکھیں یا پیسٹ کریں۔");
+      if (studioText) studioText.focus();
+      return;
+    }
+
+    if (text.length > 10000) {
+      setAudioStatus(
+        "اس وقت ایک درخواست میں زیادہ سے زیادہ 10000 حروف استعمال کریں۔"
       );
       return;
     }
 
+    if (!audio) {
+      setAudioStatus("آڈیو پلیئر نہیں ملا۔ studio.html چیک کریں۔");
+      return;
+    }
+
+    isGenerating = true;
+    const currentRequest = ++requestNumber;
+
+    if (voiceButton) voiceButton.disabled = true;
+    setAudioStatus("Piper AI آواز تیار کر رہا ہے، براہِ کرم انتظار کریں۔۔۔");
+
     try {
-      recognition = new RecognitionAPI();
-      recognition.lang = getSpeechLanguage();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.maxAlternatives = 1;
+      audio.pause();
 
-      micBaseText = studioText.value.trim();
-      micFinalTranscript = "";
-      micErrorMessage = "";
+      const response = await fetch(TTS_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          text: text
+        })
+      });
 
-      recognition.onstart = function () {
-        isListening = true;
-        updateMicButtons();
-        setMicStatus("مائیکروفون چل رہا ہے۔ اب بولیں۔۔۔");
-      };
+      if (currentRequest !== requestNumber) return;
 
-      recognition.onresult = function (event) {
-        let interim = "";
+      if (!response.ok) {
+        let errorMessage = "آواز تیار نہیں ہو سکی۔";
 
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const result = event.results[i];
-          const spoken = result[0].transcript.trim();
-
-          if (result.isFinal) {
-            micFinalTranscript +=
-              (micFinalTranscript ? " " : "") + spoken;
-          } else {
-            interim += spoken;
+        try {
+          const data = await response.json();
+          if (data && data.error) {
+            errorMessage = data.error;
           }
+        } catch (_) {
+          // سرور نے JSON جواب نہ دیا ہو تو عمومی پیغام دکھائیں۔
         }
 
-        studioText.value = [
-          micBaseText,
-          micFinalTranscript.trim(),
-          interim.trim()
-        ].filter(Boolean).join(" ").trim();
+        throw new Error(errorMessage);
+      }
 
-        updateWordCounter();
-        setMicStatus("آپ کی آواز متن میں تبدیل ہو رہی ہے۔۔۔");
-      };
+      const contentType =
+        (response.headers.get("content-type") || "").toLowerCase();
 
-      recognition.onerror = function (event) {
-        const messages = {
-          "no-speech": "کوئی آواز سنائی نہیں دی۔",
-          "audio-capture": "مائیکروفون نہیں ملا۔",
-          "not-allowed": "براہِ کرم مائیکروفون کی اجازت دیں۔",
-          "network": "آواز پہچاننے میں نیٹ ورک کا مسئلہ آیا۔",
-          "language-not-supported": "یہ زبان دستیاب نہیں۔"
-        };
+      if (!contentType.includes("audio/")) {
+        throw new Error("سرور سے آڈیو فائل موصول نہیں ہوئی۔");
+      }
 
-        micErrorMessage =
-          messages[event.error] ||
-          ("مائیکروفون کا مسئلہ: " + event.error);
+      const blob = await response.blob();
 
-        setMicStatus(micErrorMessage);
-      };
+      if (!blob.size) {
+        throw new Error("تیار شدہ آڈیو فائل خالی ہے۔");
+      }
 
-      recognition.onend = function () {
-        isListening = false;
-        updateMicButtons();
+      if (currentRequest !== requestNumber) return;
 
-        if (!micErrorMessage) {
-          setMicStatus(
-            micFinalTranscript
-              ? "آواز سے متن لکھنے کا عمل مکمل ہو گیا ہے۔"
-              : "مائیکروفون بند ہے۔"
-          );
-        }
+      revokeGeneratedAudio();
 
-        recognition = null;
-      };
+      generatedBlob = blob;
+      generatedUrl = URL.createObjectURL(blob);
 
+      audio.src = generatedUrl;
+      audio.load();
+
+      try {
+        await audio.play();
+        setAudioStatus("اردو آواز تیار ہے اور چل رہی ہے۔");
+      } catch (_) {
+        setAudioStatus(
+          "آواز تیار ہے۔ سننے کے لیے Play کا بٹن دبائیں۔"
+        );
+      }
+    } catch (error) {
+      if (currentRequest === requestNumber) {
+        console.error("Piper TTS error:", error);
+
+        setAudioStatus(
+          "آواز تیار نہیں ہو سکی: " +
+          (error.message || "نامعلوم مسئلہ")
+        );
+      }
+    } finally {
+      if (currentRequest === requestNumber) {
+        isGenerating = false;
+        if (voiceButton) voiceButton.disabled = false;
+      }
+    }
+  }
+
+  function playAudio() {
+    if (!audio || !audio.src) {
+      generateVoice();
+      return;
+    }
+
+    audio.play()
+      .then(function () {
+        setAudioStatus("آڈیو چل رہی ہے۔");
+      })
+      .catch(function () {
+        setAudioStatus("آڈیو چلانے کے لیے دوبارہ Play دبائیں۔");
+      });
+  }
+
+  function pauseAudio() {
+    if (!audio || !audio.src) {
+      setAudioStatus("ابھی کوئی آڈیو تیار نہیں ہوئی۔");
+      return;
+    }
+
+    audio.pause();
+    setAudioStatus("آڈیو روک دی گئی ہے۔");
+  }
+
+  function stopAudio() {
+    requestNumber++;
+    isGenerating = false;
+
+    if (voiceButton) voiceButton.disabled = false;
+
+    if (audio) {
+      audio.pause();
+
+      try {
+        audio.currentTime = 0;
+      } catch (_) {}
+    }
+
+    setAudioStatus("آڈیو روک دی گئی ہے۔");
+  }
+
+  function downloadAudio() {
+    if (!generatedBlob || !generatedUrl) {
+      setAudioStatus("ڈاؤن لوڈ سے پہلے آواز تیار کریں۔");
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = generatedUrl;
+    link.download = "urdu-voice.wav";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setAudioStatus(
+      "WAV آڈیو ڈاؤن لوڈ شروع ہو گیا ہے۔ MP3 کی تبدیلی ابھی شامل نہیں۔"
+    );
+  }
+
+  /* ---------------- AI TEXT TOOLS ---------------- */
+
+  async function callAI(tool, text) {
+    const inputText = String(text || "").trim();
+
+    if (!inputText) {
+      throw new Error("براہِ کرم پہلے متن لکھیں۔");
+    }
+
+    const response = await fetch(AI_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        tool: tool || "default",
+        text: inputText,
+        language: languageSelect
+          ? languageSelect.value
+          : "ur-PK"
+      })
+    });
+
+    let data;
+
+    try {
+      data = await response.json();
+    } catch (_) {
+      throw new Error("سرور کا جواب پڑھا نہیں جا سکا۔");
+    }
+
+    if (!response.ok || !data || data.ok === false) {
+      throw new Error(
+        data && data.error
+          ? data.error
+          : "AI سروس اس وقت جواب نہیں دے رہی۔"
+      );
+    }
+
+    return data;
+  }
+
+  async function generateText() {
+    const prompt = getText() ||
+      "پاکستانی اردو میں ایک مختصر حوصلہ افزا پیغام لکھیں۔";
+
+    showMessage("متن تیار کیا جا رہا ہے۔۔۔");
+
+    try {
+      const result = await callAI("default", prompt);
+      showMessage(result.text || "AI نے کوئی متن واپس نہیں کیا۔");
+    } catch (error) {
+      showMessage("متن تیار نہیں ہو سکا: " + error.message);
+    }
+  }
+
+  async function improveText() {
+    const text = getText();
+
+    if (!text) {
+      showMessage("متن بہتر کرنے کے لیے پہلے متن لکھیں۔");
+      return;
+    }
+
+    showMessage("متن بہتر کیا جا رہا ہے۔۔۔");
+
+    try {
+      const result = await callAI("improve", text);
+      showMessage(result.text || "AI نے کوئی متن واپس نہیں کیا۔");
+    } catch (error) {
+      showMessage("متن بہتر نہیں ہو سکا: " + error.message);
+    }
+  }
+
+  async function openImageTool() {
+    const text = getText();
+
+    if (!text) {
+      showMessage("تصویر کے لیے پہلے اپنا خیال یا ہدایت لکھیں۔");
+      return;
+    }
+
+    try {
+      const result = await callAI("image", text);
+      showMessage(result.text || "کوئی جواب واپس نہیں آیا۔");
+    } catch (error) {
+      showMessage("تصویر کی سروس: " + error.message);
+    }
+  }
+
+  /* ---------------- TEXT CONTROLS ---------------- */
+
+  function clearText() {
+    stopAudio();
+    setText("");
+    hideResponse();
+
+    if (studioText) studioText.focus();
+  }
+
+  async function copyText() {
+    const text = getText();
+
+    if (!text) {
+      setAudioStatus("کاپی کرنے کے لیے پہلے متن لکھیں۔");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setAudioStatus("متن کاپی ہو گیا ہے۔");
+    } catch (_) {
+      studioText.focus();
+      studioText.select();
+
+      try {
+        document.execCommand("copy");
+        setAudioStatus("متن کاپی ہو گیا ہے۔");
+      } catch (_) {
+        setAudioStatus("متن کاپی نہیں ہو سکا۔");
+      }
+    }
+  }
+
+  async function copyResponse() {
+    const text = responseContent
+      ? responseContent.textContent.trim()
+      : "";
+
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      showMessage("جواب کاپی ہو گیا ہے۔");
+    } catch (_) {
+      showMessage("جواب کاپی نہیں ہو سکا۔");
+    }
+  }
+
+  function useResponse() {
+    const text = responseContent
+      ? responseContent.textContent.trim()
+      : "";
+
+    if (!text) return;
+
+    setText(text);
+    if (studioText) studioText.focus();
+
+    setAudioStatus("تیار کردہ متن، متن والے خانے میں منتقل ہو گیا ہے۔");
+  }
+
+  /* ---------------- MICROPHONE ---------------- */
+
+  function startMicrophone() {
+    if (isListening || !studioText) return;
+
+    const Recognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!Recognition) {
+      setMicStatus(
+        "اس Chrome میں آواز سے متن لکھنے کی سہولت دستیاب نہیں۔"
+      );
+      return;
+    }
+
+    recognition = new Recognition();
+    recognition.lang = languageSelect
+      ? languageSelect.value
+      : "ur-PK";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = function () {
+      isListening = true;
+      if (startMicButton) startMicButton.disabled = true;
+      if (stopMicButton) stopMicButton.disabled = false;
+      setMicStatus("مائیکروفون چل رہا ہے، اب بولیں۔۔۔");
+    };
+
+    recognition.onresult = function (event) {
+      let transcript = "";
+
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript + " ";
+      }
+
+      studioText.value = transcript.trim();
+      updateWordCounter();
+      setMicStatus("آپ کی آواز متن میں تبدیل ہو رہی ہے۔۔۔");
+    };
+
+    recognition.onerror = function (event) {
+      setMicStatus("مائیکروفون کا مسئلہ: " + event.error);
+    };
+
+    recognition.onend = function () {
+      isListening = false;
+
+      if (startMicButton) startMicButton.disabled = false;
+      if (stopMicButton) stopMicButton.disabled = true;
+
+      if (recognition) recognition = null;
+
+      setMicStatus("مائیکروفون بند ہے۔");
+    };
+
+    try {
       recognition.start();
     } catch (_) {
-      recognition = null;
-      isListening = false;
-      updateMicButtons();
-      setMicStatus("مائیکروفون شروع نہیں ہو سکا۔ دوبارہ کوشش کریں۔");
+      setMicStatus("مائیکروفون شروع نہیں ہو سکا۔");
     }
   }
 
   function stopMicrophone() {
-    if (!recognition || !isListening) {
+    if (!recognition) {
       setMicStatus("مائیکروفون پہلے ہی بند ہے۔");
       return;
     }
 
-    setMicStatus("مائیکروفون بند کیا جا رہا ہے۔۔۔");
-
     try {
       recognition.stop();
     } catch (_) {
-      isListening = false;
-      updateMicButtons();
+      setMicStatus("مائیکروفون بند نہیں ہو سکا۔");
     }
+  }
+
+  /* ---------------- SETTINGS ---------------- */
+
+  function saveSettings() {
+    try {
+      localStorage.setItem(
+        "urduVoiceStudioStudioSettings",
+        JSON.stringify({
+          language: languageSelect ? languageSelect.value : "ur-PK",
+          voice: voiceSelect ? voiceSelect.value : "default",
+          speed: speedSelect ? speedSelect.value : "1",
+          format: formatSelect ? formatSelect.value : "wav"
+        })
+      );
+    } catch (_) {}
+  }
+
+  function loadSettings() {
+    try {
+      const saved = localStorage.getItem(
+        "urduVoiceStudioStudioSettings"
+      );
+
+      if (!saved) return;
+
+      const settings = JSON.parse(saved);
+
+      if (languageSelect && settings.language) {
+        languageSelect.value = settings.language;
+      }
+
+      if (voiceSelect && settings.voice) {
+        voiceSelect.value = settings.voice;
+      }
+
+      if (speedSelect && settings.speed) {
+        speedSelect.value = settings.speed;
+      }
+
+      if (formatSelect && settings.format) {
+        formatSelect.value = settings.format;
+      }
+    } catch (_) {}
   }
 
   /* ---------------- INTRO ---------------- */
@@ -265,535 +637,132 @@
     });
   }
 
-  function playIntroSound() {
-    try {
-      const AudioContext =
-        window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
+  /* ---------------- EVENTS ---------------- */
 
-      const context = new AudioContext();
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(392, context.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(
-        523.25, context.currentTime + 1.8
-      );
-
-      gain.gain.setValueAtTime(0.0001, context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(
-        0.035, context.currentTime + 0.35
-      );
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001, context.currentTime + 2.1
-      );
-
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start();
-      oscillator.stop(context.currentTime + 2.2);
-
-      setTimeout(function () {
-        context.close().catch(function () {});
-      }, 2500);
-    } catch (_) {}
-  }
-
-  /* ---------------- TEXT ACTIONS ---------------- */
-
-  function clearText() {
-    stopAudio();
-    setText("");
-    hideResponse();
-    if (studioText) studioText.focus();
-  }
-
-  async function copyText() {
-    const text = getText();
-
-    if (!text) {
-      showMessage("کاپی کرنے کے لیے پہلے متن لکھیں۔");
-      return;
+  function setupEvents() {
+    if (voiceButton) {
+      voiceButton.addEventListener("click", generateVoice);
     }
 
-    try {
-      await navigator.clipboard.writeText(text);
-      showMessage("متن کامیابی سے کاپی ہو گیا ہے۔");
-    } catch (_) {
-      studioText.focus();
-      studioText.select();
-
-      try {
-        document.execCommand("copy");
-        showMessage("متن کامیابی سے کاپی ہو گیا ہے۔");
-      } catch (_) {
-        showMessage("متن کاپی نہیں ہو سکا۔");
-      }
-    }
-  }
-
-  /* ---------------- TEXT TOOLS ---------------- */
-
-  function generateText() {
-    showMessage(
-      "خودکار اے آئی متن بنانے کی سہولت فی الحال بند ہے۔ آپ اپنا متن خود لکھ سکتے ہیں یا تیار شدہ متن یہاں پیسٹ کر سکتے ہیں۔"
-    );
-  }
-
-  function improveText() {
-    if (!getText()) {
-      showMessage("متن بہتر کرنے کے لیے پہلے اپنا متن لکھیں۔");
-      if (studioText) studioText.focus();
-      return;
+    if (playAudioButton) {
+      playAudioButton.addEventListener("click", playAudio);
     }
 
-    showMessage(
-      "خودکار اے آئی تدوین فی الحال بند ہے۔ آپ اپنا متن خود تبدیل کر سکتے ہیں۔"
-    );
-  }
-
-  function openImageTool() {
-    showMessage("تصویر بنانے کی اے آئی سروس فی الحال بند ہے۔");
-  }
-
-  /* ---------------- TEXT CLEANUP ---------------- */
-
-  function cleanTextForSpeech(text) {
-    return String(text || "")
-      .replace(/```[\s\S]*?```/g, " ")
-      .replace(/`([^`]+)`/g, "$1")
-      .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/^\s*#{1,6}\s*/gm, "")
-      .replace(/^\s*>\s?/gm, "")
-      .replace(/^\s*[-*+]\s+/gm, "")
-      .replace(/^\s*\d+\.\s+/gm, "")
-      .replace(/\*\*(.*?)\*\*/gs, "$1")
-      .replace(/__(.*?)__/gs, "$1")
-      .replace(/\*(.*?)\*/gs, "$1")
-      .replace(/_(.*?)_/gs, "$1")
-      .replace(/~~(.*?)~~/gs, "$1")
-      .replace(
-        /\[(?=[^\]]*(?:لہجے|انداز|آواز|وقفہ|پُرسکون|پرسکون|عقیدت|پُراثر|نرمی|سنجیدگی|مختصر|آہستہ|واضح|جوش|دھیمی|تیز))[^\]]*\]/g,
-        " "
-      )
-      .replace(/[#*_~`]/g, "")
-      .replace(/[ \t]+/g, " ")
-      .replace(/\s*\n\s*/g, "\n")
-      .trim();
-  }
-
-  /* ---------------- FREE BROWSER SPEECH ---------------- */
-
-  function loadVoices() {
-    if (!("speechSynthesis" in window)) return;
-    availableVoices = window.speechSynthesis.getVoices() || [];
-  }
-
-  function chooseVoice(language) {
-    loadVoices();
-
-    const normalize = value =>
-      String(value || "").toLowerCase().replace(/_/g, "-");
-
-    const lang = normalize(language);
-    let matching = availableVoices.filter(
-      voice => normalize(voice.lang) === lang
-    );
-
-    if (!matching.length) {
-      matching = availableVoices.filter(
-        voice => normalize(voice.lang).startsWith(lang.split("-")[0])
-      );
+    if (pauseAudioButton) {
+      pauseAudioButton.addEventListener("click", pauseAudio);
     }
 
-    if (!matching.length && lang.startsWith("ur")) {
-      matching = availableVoices.filter(
-        voice => normalize(voice.lang).startsWith("ur")
-      );
+    if (stopAudioButton) {
+      stopAudioButton.addEventListener("click", stopAudio);
     }
 
-    if (!matching.length) return null;
-
-    const wanted = voiceSelect
-      ? String(voiceSelect.value || "").toLowerCase()
-      : "default";
-
-    if (wanted.includes("female")) {
-      return matching.find(
-        voice => /female|zira|sara|heera|sania|uzma/i.test(voice.name)
-      ) || matching[0];
+    if (downloadAudioButton) {
+      downloadAudioButton.addEventListener("click", downloadAudio);
     }
 
-    if (wanted.includes("male")) {
-      return matching.find(
-        voice => /male|david|mark|hamza|asad/i.test(voice.name)
-      ) || matching[0];
+    if (clearTextButton) {
+      clearTextButton.addEventListener("click", clearText);
     }
 
-    return matching[0];
-  }
-
-  function splitSpeechText(text, maxLength) {
-    const max = maxLength || 230;
-    const paragraphs = String(text || "")
-      .split(/\n+/)
-      .map(part => part.trim())
-      .filter(Boolean);
-
-    const chunks = [];
-
-    paragraphs.forEach(function (paragraph) {
-      const sentences = paragraph.match(/[^۔؟!]+[۔؟!]?/g) || [paragraph];
-      let current = "";
-
-      sentences.forEach(function (sentence) {
-        const part = sentence.trim();
-        if (!part) return;
-
-        if ((current + " " + part).trim().length <= max) {
-          current = (current ? current + " " : "") + part;
-          return;
-        }
-
-        if (current) chunks.push(current);
-        current = "";
-
-        if (part.length <= max) {
-          current = part;
-        } else {
-          let remaining = part;
-
-          while (remaining.length > max) {
-            let cut = remaining.lastIndexOf(" ", max);
-            if (cut < Math.floor(max * 0.55)) cut = max;
-            chunks.push(remaining.slice(0, cut).trim());
-            remaining = remaining.slice(cut).trim();
-          }
-
-          current = remaining;
-        }
-      });
-
-      if (current) chunks.push(current);
-    });
-
-    return chunks.filter(Boolean);
-  }
-
-  function speakNextChunk(runId) {
-    if (runId !== speechRunId) return;
-
-    if (speechChunkIndex >= speechChunks.length) {
-      speechIsPaused = false;
-      setAudioStatus("متن کی آواز مکمل ہو گئی ہے۔");
-      return;
+    if (copyTextButton) {
+      copyTextButton.addEventListener("click", copyText);
     }
 
-    const part = speechChunks[speechChunkIndex];
-    const language = getSpeechLanguage();
-    const utterance = new SpeechSynthesisUtterance(part);
-
-    utterance.lang = language;
-
-    const voice = chooseVoice(language);
-    if (voice) {
-      utterance.voice = voice;
-      if (voice.lang) utterance.lang = voice.lang;
+    if (generateTextButton) {
+      generateTextButton.addEventListener("click", generateText);
     }
 
-    const rate = speedSelect ? Number(speedSelect.value) : 1;
-    utterance.rate = Number.isFinite(rate)
-      ? Math.max(0.6, Math.min(1.5, rate))
-      : 1;
-
-    utterance.onstart = function () {
-      if (runId === speechRunId) {
-        setAudioStatus(
-          "براؤزر کی آواز چل رہی ہے۔۔۔ حصہ " +
-          (speechChunkIndex + 1) +
-          " از " +
-          speechChunks.length
-        );
-      }
-    };
-
-    utterance.onend = function () {
-      if (runId !== speechRunId) return;
-
-      speechChunkIndex++;
-
-      setTimeout(function () {
-        speakNextChunk(runId);
-      }, 150);
-    };
-
-    utterance.onerror = function (event) {
-      if (runId !== speechRunId) return;
-
-      speechIsPaused = false;
-      setAudioStatus(
-        "براؤزر کی آواز نہیں چل سکی: " +
-        (event.error || "نامعلوم مسئلہ") +
-        "۔ دستیاب زبان کی آواز چیک کریں۔"
-      );
-    };
-
-    try {
-      window.speechSynthesis.speak(utterance);
-    } catch (_) {
-      setAudioStatus("آواز شروع نہیں ہو سکی۔ دوبارہ کوشش کریں۔");
-    }
-  }
-
-  function generateVoice() {
-    const text = cleanTextForSpeech(getText());
-
-    if (!text) {
-      setAudioStatus("پہلے متن لکھیں یا تیار شدہ متن پیسٹ کریں۔");
-      if (studioText) studioText.focus();
-      return;
+    if (improveTextButton) {
+      improveTextButton.addEventListener("click", improveText);
     }
 
-    if (
-      !("speechSynthesis" in window) ||
-      !("SpeechSynthesisUtterance" in window)
-    ) {
-      setAudioStatus("اس براؤزر میں آواز بنانے کی سہولت دستیاب نہیں۔");
-      return;
+    if (imageButton) {
+      imageButton.addEventListener("click", openImageTool);
     }
 
-    const runId = ++speechRunId;
-    window.speechSynthesis.cancel();
-
-    speechChunks = splitSpeechText(text, 230);
-    speechChunkIndex = 0;
-    speechIsPaused = false;
-
-    loadVoices();
-
-    if (!availableVoices.length) {
-      setAudioStatus(
-        "براؤزر کی آوازیں ابھی دستیاب نہیں۔ صفحہ دوبارہ کھول کر کوشش کریں۔"
-      );
-      return;
+    if (copyResponseButton) {
+      copyResponseButton.addEventListener("click", copyResponse);
     }
 
-    setAudioStatus("مفت براؤزر آواز تیار کی جا رہی ہے۔۔۔");
-
-    setTimeout(function () {
-      if (runId === speechRunId) speakNextChunk(runId);
-    }, 180);
-  }
-
-  function playAudio() {
-    if (speechIsPaused && "speechSynthesis" in window) {
-      window.speechSynthesis.resume();
-      speechIsPaused = false;
-      setAudioStatus("آواز دوبارہ چل رہی ہے۔");
-      return;
+    if (useResponseButton) {
+      useResponseButton.addEventListener("click", useResponse);
     }
 
-    if (
-      "speechSynthesis" in window &&
-      window.speechSynthesis.speaking
-    ) {
-      setAudioStatus("آواز پہلے ہی چل رہی ہے۔");
-      return;
-    }
-
-    generateVoice();
-  }
-
-  function pauseAudio() {
-    if (
-      "speechSynthesis" in window &&
-      window.speechSynthesis.speaking
-    ) {
-      window.speechSynthesis.pause();
-      speechIsPaused = true;
-      setAudioStatus("آواز روک دی گئی ہے۔");
-    } else {
-      setAudioStatus("اس وقت کوئی آواز نہیں چل رہی۔");
-    }
-  }
-
-  function stopAudio() {
-    speechRunId++;
-
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-
-    speechIsPaused = false;
-    setAudioStatus("آواز بند کر دی گئی ہے۔");
-  }
-
-  function downloadAudio() {
-    setAudioStatus(
-      "براؤزر کی آواز کو براہِ راست MP3 یا WAV میں محفوظ کرنے کے لیے الگ آڈیو ریکارڈنگ کا نظام درکار ہے۔"
-    );
-  }
-
-  /* ---------------- RESPONSE ACTIONS ---------------- */
-
-  async function copyResponse() {
-    if (!responseContent) return;
-    const text = responseContent.textContent.trim();
-    if (!text) return;
-
-    try {
-      await navigator.clipboard.writeText(text);
-      showMessage("جواب کامیابی سے کاپی ہو گیا ہے۔");
-    } catch (_) {
-      showMessage("جواب کاپی نہیں ہو سکا۔");
-    }
-  }
-
-  function useResponse() {
-    if (!responseContent) return;
-    const text = responseContent.textContent.trim();
-    if (!text) return;
-
-    setText(text);
-    if (studioText) studioText.focus();
-    setAudioStatus("جواب متن والے خانے میں منتقل ہو گیا ہے۔");
-  }
-
-  /* ---------------- SETTINGS ---------------- */
-
-  function saveSettings() {
-    try {
-      localStorage.setItem(
-        "urduVoiceStudioStudioSettings",
-        JSON.stringify({
-          language: languageSelect ? languageSelect.value : "ur-PK",
-          voice: voiceSelect ? voiceSelect.value : "default",
-          speed: speedSelect ? speedSelect.value : "1",
-          format: formatSelect ? formatSelect.value : "mp3"
-        })
-      );
-    } catch (_) {}
-  }
-
-  function loadSettings() {
-    try {
-      const saved = localStorage.getItem("urduVoiceStudioStudioSettings");
-      if (!saved) return;
-
-      const settings = JSON.parse(saved);
-
-      if (languageSelect && settings.language) {
-        languageSelect.value = settings.language;
-      }
-      if (voiceSelect && settings.voice) {
-        voiceSelect.value = settings.voice;
-      }
-      if (speedSelect && settings.speed) {
-        speedSelect.value = settings.speed;
-      }
-      if (formatSelect && settings.format) {
-        formatSelect.value = settings.format;
-      }
-    } catch (_) {}
-  }
-
-  /* ---------------- EVENT SETUP ---------------- */
-
-  function setupMicrophoneEvents() {
     if (startMicButton) {
       startMicButton.addEventListener("click", startMicrophone);
     }
+
     if (stopMicButton) {
       stopMicButton.addEventListener("click", stopMicrophone);
+      stopMicButton.disabled = true;
     }
-    updateMicButtons();
-  }
 
-  function setupButtonEvents() {
-    if (clearTextButton) clearTextButton.addEventListener("click", clearText);
-    if (copyTextButton) copyTextButton.addEventListener("click", copyText);
-    if (generateTextButton) generateTextButton.addEventListener("click", generateText);
-    if (improveTextButton) improveTextButton.addEventListener("click", improveText);
-    if (imageButton) imageButton.addEventListener("click", openImageTool);
-    if (voiceButton) voiceButton.addEventListener("click", generateVoice);
-    if (playAudioButton) playAudioButton.addEventListener("click", playAudio);
-    if (pauseAudioButton) pauseAudioButton.addEventListener("click", pauseAudio);
-    if (stopAudioButton) stopAudioButton.addEventListener("click", stopAudio);
-    if (downloadAudioButton) downloadAudioButton.addEventListener("click", downloadAudio);
-    if (copyResponseButton) copyResponseButton.addEventListener("click", copyResponse);
-    if (useResponseButton) useResponseButton.addEventListener("click", useResponse);
-  }
+    if (studioText) {
+      studioText.addEventListener("input", updateWordCounter);
 
-  function setupSettingsEvents() {
-    [languageSelect, voiceSelect, speedSelect, formatSelect].forEach(function (element) {
-      if (element) element.addEventListener("change", saveSettings);
-    });
-  }
+      studioText.addEventListener("keydown", function (event) {
+        if (event.ctrlKey && event.key === "Enter") {
+          event.preventDefault();
+          generateVoice();
+        }
+      });
+    }
 
-  function setupTextEvents() {
-    if (!studioText) return;
-
-    studioText.addEventListener("input", updateWordCounter);
-
-    studioText.addEventListener("keydown", function (event) {
-      if (event.ctrlKey && event.key === "Enter") {
-        event.preventDefault();
-        generateVoice();
+    [
+      languageSelect,
+      voiceSelect,
+      speedSelect,
+      formatSelect
+    ].forEach(function (element) {
+      if (element) {
+        element.addEventListener("change", saveSettings);
       }
     });
+
+    if (audio) {
+      audio.addEventListener("ended", function () {
+        setAudioStatus("آڈیو مکمل ہو گئی ہے۔");
+      });
+
+      audio.addEventListener("error", function () {
+        setAudioStatus("آڈیو پلیئر فائل نہیں چلا سکا۔");
+      });
+    }
   }
 
   function exposePublicAPI() {
     window.UrduVoiceStudio = {
-      getText,
-      setText,
-      clearText,
-      updateWordCounter,
-      generateText,
-      improveText,
-      generateVoice,
-      playAudio,
-      pauseAudio,
-      stopAudio,
-      downloadAudio,
-      startMicrophone,
-      stopMicrophone,
-      cleanTextForSpeech
+      getText: getText,
+      setText: setText,
+      updateWordCounter: updateWordCounter,
+      generateVoice: generateVoice,
+      playAudio: playAudio,
+      pauseAudio: pauseAudio,
+      stopAudio: stopAudio,
+      downloadAudio: downloadAudio,
+      callAI: callAI,
+      cleanTextForSpeech: cleanTextForSpeech
     };
   }
 
   function initializeStudio() {
     getElements();
     loadSettings();
-    setupButtonEvents();
-    setupSettingsEvents();
-    setupTextEvents();
-    setupMicrophoneEvents();
+    setupEvents();
     updateWordCounter();
     hideResponse();
-    loadVoices();
-
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-
-    if (intro) {
-      startStudioIntro();
-      setTimeout(playIntroSound, 500);
-    } else if (studioMain) {
-      studioMain.style.visibility = "visible";
-      studioMain.style.opacity = "1";
-    }
-
+    startStudioIntro();
     exposePublicAPI();
 
-    console.log("Urdu Voice Studio AI: free browser speech mode loaded.");
+    console.log("Urdu Voice Studio AI: Piper TTS mode loaded.");
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeStudio, { once: true });
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeStudio,
+      { once: true }
+    );
   } else {
     initializeStudio();
   }
